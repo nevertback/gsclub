@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    @@include('comm/header.html')
+</head>
+<body>
+@@include('comm/nav.html')
+<div class="qzMain" id="qzMain">
+    @@include('comm/top-topic.html')
+    <!--话题页上部列表 begin-->
+    <div class="qz-rem">
+        <aside class="qz-rem-top">来自<a href="./">游民之家</a></aside>
+        <div class="qz-card-list" id="qzCardListTopic" data-from="http://j.gamersky.com/user/club/wap/data/fake.topic.data.js"></div>
+        <a class="qz-card-more qzCardMoreBtn">查看更多</a>
+    </div>
+    <!--话题页上部列表 end-->
+    <section class="qz-box">
+        @@include('comm/tab-nav.html')
+        <div class="qz-card-list" id="qzCardList" data-from="http://j.gamersky.com/user/club/wap/data/fake.data.js"></div>
+    </section>
+</div>
+@@include('comm/footer.html')

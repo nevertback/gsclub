@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    @@include('comm/header.html')
+</head>
+<body>
+@@include('comm/nav.html')
+<hidden class="clubId" data-clubId="2" data-selectClubId="2"></hidden>
+<hidden class="topic" data-topic="" data-topicId="0" data-selectTopic=""></hidden>
+<div class="qzMain" id="qzMain">
+    @@include('comm/top-qz.html')
+    @@include('comm/more-topic.html')
+    <section class="qz-box qzIndex">
+        @@include('comm/tab-nav.html')
+        <div class="qz-card-list" id="qzCardList" data-pageIndex="0" data-pageSize="10" data-loading="false" data-infiload="close"></div>
+    </section>
+</div>
+@@include('comm/footer.html')

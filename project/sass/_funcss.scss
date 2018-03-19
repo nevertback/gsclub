@@ -1,0 +1,61 @@
+%clearfix{
+	&:before,&:after{display: table;content: " ";}
+	&:after{clear: both;}
+}
+@mixin chuizhi(){
+	position: absolute;top: 50%;
+	transform:translate3d(0,-50%,0);
+}
+//flex
+@mixin flexbox() {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+}
+@mixin justifyCon(){
+	-webkit-box-pack: justify;
+	-webkit-justify-content: space-between;
+	justify-content: space-between;
+}
+//完全居中
+@mixin ConCen(){
+	-webkit-box-pack: center;
+	-webkit-box-align: center;
+	-webkit-justify-content: center;
+	justify-content: center;
+	-webkit-align-items: center;
+	align-items: center;
+}
+//垂直居中
+@mixin ConCenV(){	
+	-webkit-box-align: center;
+	box-align: center;
+	-webkit-align-items: center;
+	align-items: center;
+}
+@mixin flex($values) {
+  -webkit-box-flex: $values;
+  -webkit-flex:  $values;
+  flex:  $values;
+}
+
+@mixin order($val) {
+  -webkit-box-ordinal-group: $val;
+  -webkit-order: $val;  
+  order: $val;
+}
+//flex end
+// border-rudius
+@mixin bdrs($val){
+	-webkit-border-radius: $val;
+	border-radius: $val;
+}
+//缓动
+@mixin trans($time:0.25s,$ease:ease-out){
+	-webkit-transition: all $time $ease;
+	transition: all $time $ease;
+}
+@mixin bxsh($h,$v,$b,$c){
+	-webkit-box-shadow: $h $v $b $c;
+	box-shadow: $h $v $b $c;
+}
