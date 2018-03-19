@@ -366,28 +366,17 @@
         //构建卡片
         createCard: function (cdp) {
             var cardDom = '';
-            //插入卡片ID cdp.cardid
             cardDom += '<div class="qz-card qzCard" data-cid="' + cdp.cardid + '">';
-            //头部 begin
-            //插入用户头像 cdp.head
             cardDom += '<header><a class="head"><img src="' + cdp.head + '" alt="head"></a>';
             cardDom += '<div class="info"><h5>';
-            //插入用户名 cdp.user
             cardDom += '<a>' + cdp.user + '</a>';
-            //是否加V图标
             if (isTrim(cdp.vauth)) {
                 cardDom += '<img src="' + cdp.vauth + '">';
             }
-            //是否加编辑V图标
-            //if (isTrim(cdp.editauth)) {
-            //  cardDom += '<i class="member member-v2"></i>';
-            // }
             cardDom += '</h5><p>';
-            //插入创建时间 cdp.createtime
             cardDom += '<span class="time">' + cdp.createtime + '</span>';
             cardDom += '</p>';
             cardDom += '</div>';
-            //是否加置顶 cdp.spectop 和 精 cdp.specvalue 图标
             if (cdp.spectop === true || cdp.specvalue === true) {
                 cardDom += '<div class="spec-icons">';
                 if (cdp.spectop === true) {
@@ -399,11 +388,7 @@
                 cardDom += '</div>';
             }
             cardDom += '</header>';
-            //头部 end
-            //主体 begin
-            //插入卡片跳转地址 cdp.url
             cardDom += '<section class="detail qzZoneHref" data-href="' + cdp.url + '">';
-            //插入卡片内容 cdp.text
             cardDom += '<div class="content">';
             if (cdp.isVideo) {
                 cardDom += cdp.text;
@@ -413,60 +398,48 @@
                 cardDom += cdp.text;
             }
             cardDom += '</div>';
-            //判断 插入 图片列表 cdp.piclist
             if (cdp.piclist.length > 0) {
                 cardDom += '<div class="media-pic-list"><div class="clearfix qz-figs qzPicPswp">';
                 $.each(cdp.piclist, function (i, item) {
                     cardDom += '<figure class="qzPicPswpBtn';
-                    //输出数据文件中的图片样式item.ext
                     if (item.ext === 'gif') {
                         cardDom += ' gif"';
                         item.large = item.origin;
                     } else if (item.ext === 'long') {
                         cardDom += ' long"';
                     }
-                    //大图地址item.large,尺寸item.size,缩略图地址item.url
                     cardDom += '"><a data-picType="' + item.ext + '" data-origin="' + item.origin + '"  data-large="' + item.large + '" data-size="' + item.size + '"><img src="' + item.url + '"></a></figure>';
                 });
                 cardDom += '</div></div>';
             }
-            //判断是否插入大图
             if (cdp.picbig.large != undefined) {
                 cdp.picbig.large = cdp.picbig.url;
                 var picType = "";
                 cardDom += '<div class="qzPicPswp media-pic';
-                //输出数据文件中的图片样式 item.ext
                 if (cdp.picbig.ext === 'gif') {
                     picType = ' gif';
                     cdp.picbig.large = cdp.picbig.origin;
                 } else if (cdp.picbig.ext === 'long') {
                     picType = ' long';
                 }
-                //大图地址cdp.picbig.large,尺寸cdp.picbig.size,缩略图地址cdp.picbig.url
                 cardDom += '"><figure class="' + picType + '"><a  data-picType="' + cdp.picbig.ext + '" data-origin="' + cdp.picbig.origin + '" data-large="' + cdp.picbig.large + '" data-size="' + cdp.picbig.size + '"><img src="' + cdp.picbig.url + '" class="qzPicPswpBtn"></a></figure></div>';
             }
-            //判断是否插入视频
             if (cdp.isVideo) {
                 cardDom += '<div class="media-video">';
-                //视频跳转地址 cdp.video.src,视频缩略图 cdp.video.pic
                 cardDom += '<a class="qzVideoPopBtn" data-href="' + cdp.video.src + '"><img src="' + cdp.video.pic + '" alt=""></a></div>'
             }
 
             cardDom += '</section>';
-            //判断是否输出来源
             if (cdp.fromUrl) {
-                //来源地址cdp.fromUrl,来源名称cdp.from
                 cardDom += '<div class="from">来自：<a href="' + cdp.fromUrl + '" >' + cdp.from + '</a></div>';
             }
-            //主体 end
-            //底部 begin
             //todo:2018-03-13 更新：添加分享按钮，修改排列
             cardDom += '<footer>';
-            cardDom += '<a class="btn-share qzBtnShare" data-shareid="' + cdp.cardid + '">分享</a>';
+            var workShareText = cdp.text.replace(/<[^>]+>/g,"").substring(0,200);
+            cardDom += '<a class="btn-share qzBtnShare" data-sharetext="'+workShareText+'" data-shareurl="'+cdp.url+'">分享</a>';
             cardDom += '<span></span><a class="btn-comment qzBtnComment" data-commcount=""  data-clubcontentid="' + cdp.cardid + '"   data-href="' + cdp.url + '">0</a>';
             cardDom += '<span></span><a class="btn-like qzBtnLike" data-likecount="" data-clubcontentid="' + cdp.cardid + '" ><i></i><b>0</b></a>';
             cardDom += '</footer>';
-            //底部 end
             cardDom += '</div>';
             cardDom += '';
             cardDom += '';
@@ -1561,7 +1534,7 @@
         },
         //todo 2018-03-13 更新：添加百度分享
         //百度分享弹窗
-        popBaiduShare:function () {
+        popBaiduShare:function (url,text) {
             var that = this;
             function createPop() {
                 var popDom = '';
@@ -1580,6 +1553,17 @@
             
             function initBaiduShare() {
                 var baiduSrc = 'http://bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5);
+                window._bd_share_config = {
+                    common : {
+                        bdText : text,
+                        bdDesc : text,
+                        bdUrl : url
+                    },
+                    share : [{
+                        "tag" : "share_1",
+                        "bdSize" : 32
+                    }]
+                };
                 if(typeof _bd_share_main === 'object'){
                     _bd_share_main.init();
                 }else{
@@ -1615,7 +1599,8 @@
         globalBind:function () {
             var $main = $('#qzMain'),that = this;
             $main.on('click','.qzBtnShare',function () {
-                that.popBaiduShare();
+                var $this = $(this),sharetext = $this.data('sharetext'),shareurl = $this.data('shareurl');
+                that.popBaiduShare(shareurl,sharetext);
             })
         },
         //入口
