@@ -186,13 +186,36 @@
                 }
             });
         },
+        //获取圈子评论新接口
+        getWapClubCommentwr:function (paramsData,callback,beforeSendFnc) {
+            var apiUrl = "http://192.168.0.100:9014/apis/club/api/getwapclubcommentwr";
+            $.ajax({
+                type: "get",
+                dataType: "jsonP",
+                url: apiUrl,
+                data: paramsData,
+                beforeSend: function () {
+                    if(typeof beforeSendFnc === 'function'){
+                        beforeSendFnc();
+                    }
+                },
+                success: function (backData) {
+                    if(typeof callback === 'function'){
+                        callback(backData);
+                    }
+                },
+                error:function (err) {
+                    console.log(err)
+                }
+            });
+        },
         //静态页演示用接口，线上不需要保留
         //获取单页评论第一页接口（接口做静态页演示专用）
         getWapCardCommentPage1:function (paramsData,callback,beforeSendFnc) {
             var paramsFmt = JSON.parse(paramsData.jsondata);
             var pages = paramsFmt.pageIndex,sort = paramsFmt.sort;
             //模拟传参返回数据
-            var apiUrl = "./data/fake.comment.page1.json";
+            var apiUrl = "http://192.168.0.100:9014/apis/club/api/getwapclubcommentwr";
             if(sort === 0 && pages === 1){
                 apiUrl = "./data/fake.comment.page1.oldest.json";
             }else if(sort === 0 && pages === 2){
@@ -202,7 +225,7 @@
             }
             $.ajax({
                 type: "get",
-                dataType: "json",
+                dataType: "jsonp",
                 url: apiUrl,
                 data: paramsData,
                 beforeSend: function () {
@@ -933,7 +956,9 @@
                                             replyPageSize:that.pagesize
                                         },
                                         reqDataFmt = {jsondata: JSON.stringify(reqData)};
-                                    clubApis.getWapCardCommentReply(reqDataFmt,function (repData) {
+                                    console.log(reqDataFmt)
+                                    clubApis.getWapClubCommentwr(reqDataFmt,function (repData) {
+                                        console.log(repData)
                                         var result = repData.body;
                                         if(result.dataType === 'ok'){
                                             var repList = result.commlist[0].reply;
@@ -958,18 +983,21 @@
                                 <li>\
                                     <a class="head"><img :src="item.head" :alt="item.name"></a>\
                                     <div class="info">\
-                                        <h5>{{item.name}}<a class="info-like">{{item.replylike}}</a></h5>\
-                                        <div class="info-others"><span class="info-time">{{item.replytime}}</span></div>\
+                                        <h5>{{item.name}}<a class="info-like">{{item.replyLike}}</a></h5>\
+                                        <div class="info-others"><span class="info-time">{{item.replyTime}}</span></div>\
                                         <div class="context qzBtnCommentInner" :data-clubcontentid="item.clubContentId" :data-commid="item.commid" :data-name="item.name" :data-userid="item.useId" v-html="item.context"></div>\
-                                        <comm-line v-if="item.reply" :count="item.replycount" :cid="item.clubContentId" :rld="item.reply"></comm-line>\
+                                        <comm-line v-if="item.replyCount>0" :count="item.replyCount" :cid="item.clubContentId" :rld="item.reply"></comm-line>\
                                      </div>\
                                 </li>\
                             ',
                             props:['item'],
                             components:{
                                 CommLine:CommLine
+                            },
+                            mounted:function () {
+                                console.log(this.item)
                             }
-                        }
+                        };
                         var CommHot = {
                             template:'\
                                 <div v-if="hotshow" class="club-card-comment-list-hot">\
@@ -989,15 +1017,20 @@
                             created:function () {
                                 var that = this,reqData = {
                                         clubContentId: cid,
+                                        isHot:1,
                                         pageIndex: that.page,
                                         pageSize: 1000 //热门默认全部显示
                                     },
                                     reqDataFmt = {jsondata: JSON.stringify(reqData)};
-                                clubApis.getWapCardCommentPageHot(reqDataFmt,function (res) {
-                                    var result = res.body;
-                                    if (result.dataType === 'ok') {
-                                        that.hotshow = true;
-                                        that.lists = result.commlist;
+                                clubApis.getWapClubCommentwr(reqDataFmt,function (res) {
+                                    if (res.errorCode === 0) {
+                                        var result = res.result;
+                                        if(result.count > 0){
+                                            that.hotshow = true;
+                                            that.lists = result.commlist;
+                                        }
+                                    }else{
+                                        console.log(res.errorMessage)
                                     }
                                 });
                             },
@@ -1061,9 +1094,9 @@
                                             sort:that.sort
                                         },
                                         reqDataFmt = {jsondata: JSON.stringify(reqData)};
-                                    clubApis.getWapCardCommentPage1(reqDataFmt,function (res) {
-                                        var result = res.body;
-                                        if (result.dataType === 'ok') {
+                                    clubApis.getWapClubCommentwr(reqDataFmt,function (res) {
+                                        if (res.errorCode === 0) {
+                                            var result = res.result;
                                             that.allshow = true;
                                             that.navs[that.sort].pageall = result.count;
                                             that.navs[that.sort].list = that.navs[that.sort].list.concat(result.commlist);
@@ -1072,6 +1105,8 @@
                                             }else{
                                                 that.navs[that.sort].more = 1;
                                             }
+                                        }else{
+                                            console.log(res.errorMessage)
                                         }
                                     },function () {
                                         that.navs[that.sort].more = 2;
@@ -1133,7 +1168,7 @@
                 if (st === 0) {
                     st = $('body').scrollTop();
                 }
-                if (st > dh - wh - 20 && st > wh - dh && qzConfig.isCanLoading === true) {
+                if (st > dh - wh - 100 && st > wh - dh && qzConfig.isCanLoading === true) {
                     qzConfig.isCanLoading = false;
                     loadFunc();
                 }
