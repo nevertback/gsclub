@@ -915,7 +915,7 @@
                         var CommLine = {
                             template:'\
                                 <div class="info-comment">\
-                                    <div v-for="item in rld" class="ic-item qzBtnCommentInner" :data-clubcontentid="cid" :data-commid="item.commid" :data-name="item.name" :data-userid="item.useId">\
+                                    <div v-for="item in therld" class="ic-item qzBtnCommentInner" :data-clubcontentid="cid" :data-commid="item.commid" :data-name="item.name" :data-userid="item.useId">\
                                         <a class="ici-name">{{item.name}}</a>\
                                         <i v-if="item.reply" class="ici-rpy">回复</i>\
                                         <a v-if="item.reply" class="ici-name">{{item.reply}}</a>\
@@ -929,12 +929,13 @@
                                     more:false,
                                     moretxt:'查看全部'+(this.count-2)+'条回复',
                                     moregray:false,
-                                    page:2,
-                                    pagesize:10
+                                    page:1,
+                                    pagesize:10,
+                                    therld:this.rld
                                 }
                             },
-                            props:['rld','cid','count'],
-                            mounted:function () {
+                            props:['rld','cid','count','commid'],
+                            created:function () {
                                 if(this.count>2){
                                     this.more = true;
                                 }
@@ -952,22 +953,31 @@
                                             pageIndex: 1,
                                             pageSize: 1,
                                             sort:0,
+                                            clubCommentId:that.commid,
                                             replyPageIndex:that.page,
                                             replyPageSize:that.pagesize
                                         },
                                         reqDataFmt = {jsondata: JSON.stringify(reqData)};
-                                    console.log(reqDataFmt)
                                     clubApis.getWapClubCommentwr(reqDataFmt,function (repData) {
-                                        console.log(repData)
                                         var result = repData.body;
-                                        if(result.dataType === 'ok'){
+                                        if(repData.errorCode === 0){
+                                            result = repData.result;
                                             var repList = result.commlist[0].reply;
-                                            that.rld = that.rld.concat(repList);
-                                            if(that.pagesize*(that.page-1)>=that.count){
+                                            if(that.page === 1){
+                                                repList.splice(0,2);
+                                            }
+                                            that.therld = that.therld.concat(repList);
+                                            if(that.pagesize*that.page+2>=that.count){
                                                 that.moretxt = '全部加载完成';
                                                 that.moregray = true;
                                             }else{
-                                                that.moretxt = '查看剩余'+(that.count-that.pagesize*(that.page - 1) - 2)+'条回复';
+                                                var surplusCount;
+                                                if(that.page < 1){
+                                                    surplusCount = that.count-that.pagesize*that.page - 2
+                                                }else{
+                                                    surplusCount = that.count-that.pagesize*that.page;
+                                                }
+                                                that.moretxt = '查看剩余'+surplusCount+'条回复';
                                             }
                                             that.page++;
                                         }
@@ -986,7 +996,7 @@
                                         <h5>{{item.name}}<a class="info-like">{{item.replyLike}}</a></h5>\
                                         <div class="info-others"><span class="info-time">{{item.replyTime}}</span></div>\
                                         <div class="context qzBtnCommentInner" :data-clubcontentid="item.clubContentId" :data-commid="item.commid" :data-name="item.name" :data-userid="item.useId" v-html="item.context"></div>\
-                                        <comm-line v-if="item.replyCount>0" :count="item.replyCount" :cid="item.clubContentId" :rld="item.reply"></comm-line>\
+                                        <comm-line v-if="item.replyCount>0" :count="item.replyCount" :cid="item.clubContentId" :rld="item.reply" :commid="item.commId"></comm-line>\
                                      </div>\
                                 </li>\
                             ',
@@ -995,7 +1005,7 @@
                                 CommLine:CommLine
                             },
                             mounted:function () {
-                                console.log(this.item)
+                                this.item.reply = this.item
                             }
                         };
                         var CommHot = {
@@ -1091,7 +1101,9 @@
                                             clubContentId: cid,
                                             pageIndex: page,
                                             pageSize: that.eachnum,
-                                            sort:that.sort
+                                            sort:that.sort,
+                                            replyPageIndex:1,
+                                            replyPageSize:2
                                         },
                                         reqDataFmt = {jsondata: JSON.stringify(reqData)};
                                     clubApis.getWapClubCommentwr(reqDataFmt,function (res) {

@@ -498,7 +498,7 @@
                 if (st === 0) {
                     st = $('body').scrollTop();
                 }
-                if (st > dh - wh - 20 && st > wh - dh && qzConfig.isCanLoading === true) {
+                if (st > dh - wh - 100 && st > wh - dh && qzConfig.isCanLoading === true) {
                     qzConfig.isCanLoading = false;
                     loadFunc();
                 }
