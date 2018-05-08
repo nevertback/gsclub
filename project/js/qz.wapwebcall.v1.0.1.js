@@ -1221,6 +1221,7 @@
     };
     qzFunc.main();
     $(document).ready(function () {
+        $('#qzCardList').attr("data-pageIndex", 0);
         $('#qzCardList').getClub();
         $(".qzNavFx").showNav();
         $(".joinCount").joinCount();

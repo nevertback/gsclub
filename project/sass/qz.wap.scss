@@ -693,7 +693,7 @@
                     width: 0.28rem;
                     height: 0.25rem;
                     background: url(http://image.gamersky.com/webimg15/user/club/wap/qz-icon-like-g@3x.png) 0 0 no-repeat;
-                    background-size: 0.84rem 0.25rem;
+                    background-size: 0.84rem 100%;
                     &:after{
                         display: block;
                         position: absolute;
@@ -703,7 +703,7 @@
                         width: 0.14rem;
                         height: 0.06rem;
                         background: url(http://image.gamersky.com/webimg15/user/club/wap/qz-icon-like-g.png) -0.34rem 0 no-repeat;
-                        background-size: 0.84rem 0.25rem;
+                        background-size: 0.84rem 100%;
                         transform:translate3d(0,5px,0) scale(0);
                         transform-origin: 50% 0;
                         opacity: 0;
@@ -724,7 +724,7 @@
                     width: 0.28rem;
                     height: 0.23rem;
                     background: url(http://image.gamersky.com/webimg15/user/club/wap/qz-icon-comm@3x.png) 0 0 no-repeat;
-                    background-size: 0.28rem 0.23rem;
+                    background-size: 100%;
                 }
             }
             &.btn-share{
@@ -735,7 +735,7 @@
                     width: 0.24rem;
                     height: 0.24rem;
                     background: url(http://image.gamersky.com/webimg15/user/club/wap/qz-icon-share@3x.png) 0 0 no-repeat;
-                    background-size: 0.24rem 0.24rem;
+                    background-size: 100%;
                 }
             }
         }
