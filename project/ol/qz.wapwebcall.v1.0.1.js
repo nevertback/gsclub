@@ -1,32 +1,11 @@
 (function ($) {
-    var clubId = $("#qzMain").attr("clubId"), topicId = $("#qzMain").attr("topicId"), topic = $("#qzMain").attr("topic");
-    var clubConfig = {
-        //卡片列表排序方式
-        listNavSetter:{
-            //最新
-            new:{
-                sort:1,
-                type:0
-            },
-            //最热
-            hot:{
-                sort:2,
-                type:0
-            },
-            //精品
-            best:{
-                sort:1,
-                type:1
-            }
-        }
-    };
-    //清除空格
+    var $qzMain =$("#qzMain"),  clubId = $qzMain.attr("clubId"), topicId = $qzMain.attr("topicId"), topic = $qzMain.attr("topic");
     var isTrim = function (s) {
         if (typeof (s) == 'undefined') {
             return false;
         }
         return s.replace(/(^\s*)|(\s*$)/g, "");
-    };
+    };  //清除空格
     $.fn.extend({
         //文本框自适应高度
         textareaAutoHeight: function (options) {
@@ -58,10 +37,15 @@
             this.init();
         }
     });
+    //模拟加载更多用测试数据end
     var qzConfig = {
+        // 判断是否开始无限加载
         isCanLoading: true,
+        //加载中 结构
         loadingDom: '<div class="qz-loading">正在加载</div>',
+        //全部加载完成 结构
         loadedDom: '<div class="qz-loaded">全部加载完成</div>',
+        //内容为空 结构
         loadnullDom: '<div class="qz-loadnull">还没有内容</div>'
     };
     var qzFunc = {
@@ -97,31 +81,31 @@
                 $('html').css({ 'font-size': pw / 6.4 + 'px' });
             }
         },
-        //弹窗公用方法
-        popCommon:{
-            open:function () {
-                $('html').addClass('hideScroll');
-                $('.ymw-backtotop').css('display','none');
-            },
-            close:function () {
-                $('html').removeClass('hideScroll');
-                $('.ymw-backtotop').css('display','block');
-            }
-        },
         //构建卡片
         createCard: function (cdp) {
             var cardDom = '';
+            //插入卡片ID cdp.cardid
             cardDom += '<div class="qz-card qzCard" data-cid="' + cdp.cardid + '">';
+            //头部 begin
+            //插入用户头像 cdp.head
             cardDom += '<header><a class="head"><img src="' + cdp.head + '" alt="head"></a>';
             cardDom += '<div class="info"><h5>';
+            //插入用户名 cdp.user
             cardDom += '<a>' + cdp.user + '</a>';
+            //是否加V图标
             if (isTrim(cdp.vauth)) {
-                cardDom += '<img src="'+ cdp.vauth +'">';
+                cardDom += '<img src="http://image.gamersky.com/webimg15/user/club/pc/zheng-bj.png">';
             }
+            //是否加编辑V图标
+            //if (isTrim(cdp.editauth)) {
+            //   cardDom += '<i class="member member-v2"></i>';
+            // }
             cardDom += '</h5><p>';
+            //插入创建时间 cdp.createtime
             cardDom += '<span class="time">' + cdp.createtime + '</span>';
             cardDom += '</p>';
             cardDom += '</div>';
+            //是否加置顶 cdp.spectop 和 精 cdp.specvalue 图标
             if (cdp.spectop === true || cdp.specvalue === true) {
                 cardDom += '<div class="spec-icons">';
                 if (cdp.spectop === true) {
@@ -133,7 +117,11 @@
                 cardDom += '</div>';
             }
             cardDom += '</header>';
+            //头部 end
+            //主体 begin
+            //插入卡片跳转地址 cdp.url
             cardDom += '<section class="detail qzZoneHref" data-href="' + cdp.url + '">';
+            //插入卡片内容 cdp.text
             cardDom += '<div class="content">';
             if (cdp.isVideo) {
                 cardDom += cdp.text;
@@ -143,52 +131,64 @@
                 cardDom += cdp.text;
             }
             cardDom += '</div>';
+            //判断 插入 图片列表 cdp.piclist
             if (cdp.piclist.length > 0) {
                 cardDom += '<div class="media-pic-list"><div class="clearfix qz-figs qzPicPswp">';
                 $.each(cdp.piclist, function (i, item) {
                     cardDom += '<figure class="qzPicPswpBtn';
+                    //输出数据文件中的图片样式item.ext
                     if (item.ext === 'gif') {
                         cardDom += ' gif"';
                         item.large = item.origin;
                     } else if (item.ext === 'long') {
                         cardDom += ' long"';
                     }
+                    //大图地址item.large,尺寸item.size,缩略图地址item.url
                     cardDom += '"><a data-origin="' + item.origin + '"  data-large="' + item.large + '" data-size="' + item.size + '"><img src="' + item.url + '"></a></figure>';
                 });
                 cardDom += '</div></div>';
             }
+            //判断是否插入大图
             if (cdp.picbig.large != undefined) {
                 cdp.picbig.large = cdp.picbig.url;
                 var picType = "";
                 cardDom += '<div class="qzPicPswp media-pic';
+                //输出数据文件中的图片样式 item.ext
                 if (cdp.picbig.ext === 'gif') {
                     picType = ' gif';
                     cdp.picbig.large = cdp.picbig.origin;
                 } else if (cdp.picbig.ext === 'long') {
                     picType = ' long';
                 }
+                //大图地址cdp.picbig.large,尺寸cdp.picbig.size,缩略图地址cdp.picbig.url
                 cardDom += '"><figure class="' + picType + '"><a data-origin="' + cdp.picbig.origin + '" data-large="' + cdp.picbig.large + '" data-size="' + cdp.picbig.size + '"><img src="' + cdp.picbig.url + '" class="qzPicPswpBtn"></a></figure></div>';
             }
+            //判断是否插入视频
             if (cdp.isVideo) {
                 cardDom += '<div class="media-video">';
+                //视频跳转地址 cdp.video.src,视频缩略图 cdp.video.pic
                 cardDom += '<a class="qzVideoPopBtn" data-href="' + cdp.video.src + '"><img src="' + cdp.video.pic + '" alt=""></a></div>'
             }
 
             cardDom += '</section>';
+            //判断是否输出来源
             if (cdp.fromUrl) {
+                //来源地址cdp.fromUrl,来源名称cdp.from
                 cardDom += '<div class="from">来自：<a href="' + cdp.fromUrl + '" >' + cdp.from + '</a></div>';
             }
+            //主体 end
+            //底部 begin
             cardDom += '<footer>';
-            var workShareText = cdp.text.replace(/<[^>]+>/g,"").substring(0,200);
-            cardDom += '<a class="btn-share qzBtnShare" data-sharetext="'+workShareText+'" data-shareurl="'+cdp.url+'">分享</a>';
-            cardDom += '<span></span>';
+            //点赞数cdp.countlike
+            cardDom += '<a class="btn-like qzBtnLike" data-likecount="" data-clubcontentid="' + cdp.cardid + '" ><i></i><b></b></a><span></span>';
+            //评论数 cdp.countcomment,卡片ID cdp.cardid
             cardDom += '<a class="btn-comment qzBtnComment" data-commcount=""  data-clubcontentid="' + cdp.cardid + '"   data-href="' + cdp.url + '">0</a>';
-            cardDom += '<span></span>';
-            cardDom += '<a class="btn-like qzBtnLike" data-likecount="" data-clubcontentid="' + cdp.cardid + '" ><i></i><b></b></a>';
             cardDom += '</footer>';
+            //底部 end
             cardDom += '</div>';
             cardDom += '';
             cardDom += '';
+
             return cardDom;
         },
         //图片弹出层 默认执行,一般情况不需要修改
@@ -279,7 +279,6 @@
                         showHideOpacity: 0,
                         galleryUID: galleryElement.getAttribute('data-pswp-uid'),
                         history: false,
-                        tapToClose:true,
                         getThumbBoundsFn: function (index) {
                             var thumbnail = items[index].el.getElementsByTagName('img')[0],
                                 pageYScroll = window.pageYOffset || document.documentElement.scrollTop,
@@ -335,6 +334,7 @@
         insertCard: function (tar, dt) {
             var insDom = '';
             $.each(dt, function (i, item) {
+                //使用返回数据 构建卡片
                 insDom += qzFunc.createCard(item);
             });
             $(tar).html(insDom);
@@ -342,13 +342,16 @@
             $(".qzBtnLike").addLike();
             $(".qzBtnComment").commentCount();
             $(".qzCard .content").removeTarget();
+            //构建完成后调用图片弹出层
             qzFunc.photoSwp();
+            //开启视频弹窗
             qzFunc.openVideoPop();
         },
         //加载更多卡片
         appendCard: function (tar, dt) {
             var insDom = '';
             $.each(dt, function (i, item) {
+                //使用返回数据 构建卡片
                 insDom += qzFunc.createCard(item);
             });
             $(tar).append(insDom);
@@ -356,7 +359,9 @@
             $(".qzBtnLike").addLike();
             $(".qzBtnComment").commentCount();
             $(".qzCard .content").removeTarget();
+            //构建完成后调用图片弹出层
             qzFunc.photoSwp();
+            //开启视频弹窗
             qzFunc.openVideoPop();
         },
         //发布/参与
@@ -373,23 +378,34 @@
                     comDom += topic;
                 }
                 comDom += '</textarea > <textarea class="mathIpt" rows="3"></textarea></div > ';
+                //上传图片后显示，不传图片不显示 begin
                 comDom += '<div class="clearfix qz-pic-list">';
                 comDom += '<div class="qz-pic-list-li"><label for="qzSelectPhoto" class="qz-pic-list-add"></label></div>';
                 comDom += '</div>';
                 comDom += '<input id="fileupload"  data-imagesize="5120"   type="file" style="display:none" name="files" method="POST" multiple="">';
+                //上传图片后显示，不传图片不显示 end
                 comDom += '</div>';
                 comDom += '<footer><label for="qzSelectPhoto" class="qz-upload-pic qzUploadPic">图片</label><select class="qz-pop-sel">';
+                //右下角选项
                 comDom += '</select>';
+                //隐藏的上传input
+                //comDom += '<input id="qzSelectPhoto" class="qz-select-photo" type="file" accept="image/gif,image/jpeg,image/jpg,image/png,image/bmp">';
                 comDom += '</footer></div>';
+                //输出弹层
                 $('body').append(comDom);
                 var $qzPop = $('.qzPop');
+                //选择图片
                 $(".qz-pic-list-add,.qzUploadPic").selectPhoto();
+                //选择圈子
                 if (isTrim(clubname)) {
                     $(".qz-pop-sel").html("<option value='clubId'>发往" + clubname + "</option>");
                 }
+
+                //添加弹层动画
                 setTimeout(function () {
                     $qzPop.addClass('cur');
                 }, 10);
+                //设置textarea尺寸
                 function setAreaSize() {
                     $qzPop.find('.realIpt').on('input', function () {
                         $qzPop.find('.mathIpt').val($qzPop.find('.realIpt').val());
@@ -398,17 +414,22 @@
                     })
                 }
                 setAreaSize();
+                //关闭弹层
                 function closePop() {
                     $qzPop.removeClass('cur');
                     $('html,body').removeClass('hideScroll').animate({ scrollTop: scrolltopval }, 0);
+                    //等待弹层动画执行完后移除弹层
                     setTimeout(function () {
                         $qzPop.remove();
                     }, 250);
                 }
+                //关闭按钮
                 $('.qzPopClose').on('click', closePop);
+                //发布按钮
                 $qzPop.fabuSubmit(scrolltopval);
 
             }
+            //绑定发布按钮事件
             $('#qzMain').on('click', '.qzBtnContext', function () {
                 $(this).UserOnline(function (response) {
                     if (response.status == 'ok') {
@@ -419,6 +440,7 @@
                         setTimeout(function () {
                             $('html,body').addClass('hideScroll');
                         }, 300);
+                        //打开弹层
                         insertContext(st);
                     }
                 });
@@ -437,6 +459,7 @@
                 setTimeout(function () {
                     $qzPop.addClass('cur');
                 }, 10);
+                //设置textarea尺寸
                 function setAreaSize() {
                     $qzPop.find('.realIpt').on('input', function () {
                         $qzPop.find('.mathIpt').val($qzPop.find('.realIpt').val());
@@ -452,9 +475,12 @@
                         $qzPop.remove();
                     }, 250);
                 }
+                //关闭按钮
                 $('.qzPopClose').on('click', closePop);
+                //发布按钮
                 $('.qzPopSmt').on('click', function () {
                     var context = $qzPop.find('.realIpt').val();
+                    //数据提交后执行下面函数
                     $(this).addComment(scrolltopval);
                 });
             }
@@ -464,11 +490,16 @@
                     if (response.status == 'ok') {
                         var st = $('html').scrollTop(),
                             cid = $this.data('clubcontentid'),
+                            //评论数量
                             count = $this.data('commcount'),
+                            //单页卡片地址
                             url = $this.data('href'),
+                            //回复的用户名
                             uerId = $this.data('userid'),
                             commentId = $this.data('commid'),
                             rename = $this.attr('data-name');
+
+                        //判断是否单页 单页直接打开弹层，不判断评论数
                         if ($('#qzCardContext').length > 0) {
                             if (st === 0) {
                                 st = $('body').scrollTop();
@@ -476,6 +507,7 @@
                             setTimeout(function () {
                                 $('html,body').addClass('hideScroll');
                             }, 300);
+                            //打开弹层
                             insertComment(st, cid, commentId, rename, uerId);
                             return false;
                         }
@@ -486,8 +518,10 @@
                             setTimeout(function () {
                                 $('html,body').addClass('hideScroll');
                             }, 300);
+                            //打开弹层
                             insertComment(st, cid, commentId, rename, uerId);
                         } else {
+                            //如果评论数不为0 跳转到卡片单页
                             window.location.href = url;
                         }
                     }
@@ -499,19 +533,199 @@
             $('#qzMain').on('click', '.qzBtnLike', function () {
                 var $this = $(this),
                     cid = $this.closest('.qzCard').data('cid'),
+                    //赞的数量
                     count = $this.attr('data-likecount');
+                //判断是否喜欢过,data-islike=1为点过赞，再次点击删除赞，同时设置data-islike=0
                 if (parseInt($this.attr('data-islike')) === 1) {
+                    //删除赞 数据提交后回调
                     $this.removeClass('cur').attr('data-islike', '0').attr('data-likecount', parseInt(count) - 1).find('b').html(parseInt(count) - 1);
+                    console.log('删除赞');
                 } else {
+                    //添加赞数 据提交后回调
                     $this.addClass('cur').attr('data-islike', '1').attr('data-likecount', parseInt(count) + 1).find('b').html(parseInt(count) + 1);
+                    console.log('喜欢了 cid = ' + cid + ' 的卡片 *** cid 为按钮传入的卡片id,供开发使用');
                 }
             })
+        },
+        //初始化内容 卡片列表
+        //初始化内容 话题上部
+        initPageTopic: function () {
+            var tar = '#qzCardListTopic', tarInsert = $(tar);
+            if (tarInsert.length > 0) {
+                //获取数据，具体参数和方式后端自定义
+                var dt = tarInsert.data('from');
+                $.ajax({
+                    dataType: 'Script',
+                    url: dt,
+                    beforeSend: function () {
+                        //插入加载动画
+                        tarInsert.append(qzConfig.loadingDom);
+                    },
+                    success: function () {
+                        //判断数据状态
+                        if (fakeDate.dataType === 'ok') {
+                            //处理获取的数据
+                            tarInsert.attr('data-page', fakeDate.page);
+                            //允许无限加载
+                            tarInsert.attr('data-moreload', 'open');
+                            qzFunc.insertCard(tar, fakeDate.cardgroup);
+                        } else {
+                            //数据为空是插入提示
+                            tarInsert.html(qzConfig.loadnullDom);
+                        }
+                    }
+                })
+            }
+        },
+        //初始化内容 内容单页
+        initPageContext: function () {
+            var tar = '#qzCardContext', tarInsert = $(tar);
+            if (tarInsert.length > 0) {
+                //获取数据，具体参数和方式后端自定义
+                var dt = tarInsert.data('from');
+                $.ajax({
+                    dataType: 'Script',
+                    url: dt,
+                    beforeSend: function () {
+                        //插入加载动画
+                        tarInsert.append(qzConfig.loadingDom);
+                    },
+                    success: function () {
+                        //判断数据状态
+                        if (fakeDate.dataType === 'ok') {
+                            //处理获取的数据
+                            tarInsert.attr('data-page', fakeDate.page);
+                            qzFunc.insertCard(tar, fakeDate.cardgroup);
+                        } else {
+                            //数据为空是插入提示
+                            tarInsert.html(qzConfig.loadnullDom);
+                        }
+                    }
+                });
+                var commtar = '#qzClComment', commurl = $(commtar).data('from');
+                $.ajax({
+                    dataType: 'Script',
+                    url: commurl,
+                    beforeSend: function () {
+                        //插入加载动画
+                        $(commtar).append(qzConfig.loadingDom);
+                    },
+                    success: function () {
+                        //判断数据状态
+                        if (fakeCommData.dataType === 'ok') {
+                            //处理获取的数据
+                            $(commtar).attr('data-page', fakeCommData.page);
+                            $(commtar).attr('data-infiload', 'open');
+                            qzFunc.insertCardComment(commtar, fakeCommData.commlist);
+                        } else {
+                            //数据为空时插入提示
+                            $(commtar).html(qzConfig.loadnullDom);
+                        }
+                    }
+                });
+                //评论/赞 无限加载
+                function infiniteLoadCl() {
+                    function loadFunc() {
+                        var selid = $('.qzClCon.cur').attr('id'), tar, tarInsert;
+                        if (selid === 'qzClComment') {
+                            tar = '#qzClComment';
+                            tarInsert = $(tar);
+                            if (tarInsert.attr('data-infiload') === 'open') {
+                                $.ajax({
+                                    dataType: 'Script',
+                                    url: pgMoredataUrlComm,
+                                    beforeSend: function () {
+                                        //插入加载动画
+                                        tarInsert.append(qzConfig.loadingDom);
+                                    },
+                                    success: function () {
+                                        var nowPage = tarInsert.attr('data-page'), dataPage = fakeCommData.page;
+                                        //加载成功后移除加载动画
+                                        tarInsert.find('.qz-loading').remove();
+                                        //判断时候还有当前数据页码是否加载完成
+                                        if (dataPage > nowPage) {
+                                            //设置新页码
+                                            tarInsert.attr('data-page', dataPage);
+                                            //插入更多数据
+                                            qzFunc.appendCardComment(tar, fakeCommData.commlist);
+                                        } else {
+                                            if (tarInsert.attr('data-infiload') === 'open') {
+                                                //全部加载完成 关闭加载
+                                                tarInsert.attr('data-infiload', 'close');
+                                                //插入 全部加载完成 提示
+                                                tarInsert.append(qzConfig.loadedDom);
+                                            }
+                                        }
+                                        qzConfig.isCanLoading = true;
+                                    }
+                                })
+                            } else {
+                                qzConfig.isCanLoading = true;
+                            }
+
+                        } else if (selid === 'qzClLike') {
+                            tar = '#qzClLike';
+                            tarInsert = $(tar);
+                            if (tarInsert.attr('data-infiload') === 'open') {
+                                $.ajax({
+                                    dataType: 'Script',
+                                    url: pgMoredataUrlLike,
+                                    beforeSend: function () {
+                                        //插入加载动画
+                                        tarInsert.append(qzConfig.loadingDom);
+                                    },
+                                    success: function () {
+                                        var nowPage = tarInsert.attr('data-page'), dataPage = fakeLikeData.page;
+                                        //加载成功后移除加载动画
+                                        tarInsert.find('.qz-loading').remove();
+                                        //判断时候还有当前数据页码是否加载完成
+                                        if (dataPage > nowPage) {
+                                            //设置新页码
+                                            tarInsert.attr('data-page', dataPage);
+                                            //插入更多数据
+                                            qzFunc.appendCardLike(tar, fakeLikeData.likelist);
+                                        } else {
+                                            if (tarInsert.attr('data-infiload') === 'open') {
+                                                //全部加载完成 关闭加载
+                                                tarInsert.attr('data-infiload', 'close');
+                                                //插入 全部加载完成 提示
+                                                tarInsert.append(qzConfig.loadedDom);
+                                            }
+                                        }
+                                        qzConfig.isCanLoading = true;
+                                    }
+                                })
+                            } else {
+                                qzConfig.isCanLoading = true;
+                            }
+                        }
+                    }
+                    function scrollJudge() {
+                        var st = $('html').scrollTop(), dh = $(document).height(), wh = $(window).height();
+                        if (st === 0) {
+                            st = $('body').scrollTop();
+                        }
+                        if (st > dh - wh - 100 && st > wh - dh && qzConfig.isCanLoading === true) {
+                            qzConfig.isCanLoading = false;
+                            loadFunc();
+                        }
+                    }
+                    if ($(tar).length > 0) {
+                        $(window).scroll(function () {
+                            scrollJudge();
+                        });
+                    }
+                }
+                infiniteLoadCl();
+            }
         },
         //无限加载
         infiniteLoad: function (tar, callback) {
             function loadFunc() {
                 var tarInsert = $(tar);
+                //判断列表是否开启无限加载
                 if (tarInsert.attr('data-infiload') === 'open') {
+                    //获取数据，具体参数和方式后端自定义
                     if (typeof callback === 'function') {
                         callback(tar, tarInsert);
                     }
@@ -533,13 +747,54 @@
                 });
             }
         },
+        //话题页上部加载更多按钮
+        topicMore: function () {
+            var $moreBtn = $('.qzCardMoreBtn');
+            $moreBtn.on('click', function () {
+                var tarInsert = $('#qzCardListTopic');
+                //判断列表是否开启查看更多
+                if (tarInsert.length > 0 && tarInsert.attr('data-moreload') === 'open') {
+                    //获取数据，具体参数和方式后端自定义
+                    $.ajax({
+                        dataType: 'Script',
+                        url: pgMoredataUrl,
+                        beforeSend: function () {
+                            //插入加载动画
+                            tarInsert.append(qzConfig.loadingDom);
+                        },
+                        success: function () {
+                            var nowPage = tarInsert.attr('data-page'), dataPage = fakeDate.page;
+                            //加载成功后移除加载动画
+                            tarInsert.find('.qz-loading').remove();
+                            //判断时候还有当前数据页码是否加载完成
+                            if (dataPage > nowPage) {
+                                //设置新页码
+                                tarInsert.attr('data-page', dataPage);
+                                //插入更多数据
+                                qzFunc.appendCard('#qzCardListTopic', fakeDate.cardgroup);
+                            } else {
+                                if (tarInsert.attr('data-moreload') === 'open') {
+                                    //全部加载完成 关闭加载
+                                    tarInsert.attr('data-moreload', 'close');
+                                    //按钮 改变提示文字
+                                    $moreBtn.html('全部加载完成');
+                                }
+                            }
+                        }
+                    })
+                }
+            });
+        },
         //列表切换
         tabNav: function () {
             function navFunc() {
                 var $nav = $('.qzNavFx'),
+                    //浮动导航层
                     $navWrap = $('.qzNavFxW'),
+                    //固定不动的占位导航
                     $navPos = $('.qzNavPos'),
                     loadedTimer;
+                //判断滚动距离添加浮动导航
                 function fixNav() {
                     var navTop = $navPos.offset().top, srlTop = $('html').scrollTop();
                     if (srlTop === 0) {
@@ -555,6 +810,7 @@
                 $(window).scroll(function () {
                     fixNav();
                 });
+                //加载tab内容前 页面位置
                 function scrollLoading() {
                     var $html = $('html'), hh = $html.height(),
                         navSt = $navPos.offset().top, srlTop = $html.scrollTop();
@@ -566,6 +822,7 @@
                         $('html,body').animate({ scrollTop: navSt }, 0);
                     }
                 }
+                //加载tab内容后 页面位置
                 function scrollLoaded() {
                     var $html = $('html');
                     clearTimeout(loadedTimer);
@@ -573,8 +830,10 @@
                         $html.css('height', '');
                     }, 200);
                 }
+                //点击切换绑定事件
                 $nav.find('a').on('click', function () {
                     var $this = $(this), tarCon = '#qzCardList';
+                    //设置按钮点击后样式
                     $nav.find('a').removeClass('cur');
                     $this.addClass('cur');
                     $(tarCon).html("").attr("data-pageIndex", 0).attr("data-loading", false);
@@ -589,16 +848,118 @@
                 navFunc();
             }
         },
+        //内容单页赞-评论切换
+        tabCl: function () {
+            var $nav = $('.tabNavCl'), $con = $('.qzClCon');
+            $nav.find('a').on('click', function () {
+                var $this = $(this), tar = $this.data('tar');
+                $nav.find('a').removeClass('cur');
+                $con.removeClass('cur');
+                $this.addClass('cur');
+                $('.' + tar).addClass('cur');
+                //数据获取后端自定义
+                if (tar === 'qzClLike') {
+                    var liketar = '#qzClLike', likeurl = $(liketar).data('from');
+                    if ($(liketar).attr('data-page') === undefined) {
+                        $.ajax({
+                            dataType: 'Script',
+                            url: likeurl,
+                            beforeSend: function () {
+                                //插入加载动画
+                                $(liketar).append(qzConfig.loadingDom);
+                            },
+                            success: function () {
+                                $(liketar).find('.qz-loading').remove();
+                                //判断数据状态
+                                if (fakeLikeData.dataType === 'ok') {
+                                    //处理获取的数据
+                                    $(liketar).attr('data-page', fakeLikeData.page);
+                                    $(liketar).attr('data-infiload', 'open');
+                                    qzFunc.appendCardLike(liketar, fakeLikeData.likelist);
+                                } else {
+                                    //数据为空时插入提示
+                                    $(commtar).html(qzConfig.loadnullDom);
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        },
         //单页跳转
         pageGoto: function () {
             var openId = $('.qz-card-list');
+            //点击其他区域跳转到单页
             openId.on('click', '.qzCard .qzZoneHref', function () {
                 var $this = $(this), url = $this.data('href');
                 window.location.href = url;
             });
+            //阻止事件冒泡
             openId.on('click', '.qzZoneHref figure,.qzZoneHref a', function (event) {
                 event.stopPropagation();
             });
+        },
+        //构建卡片内评论
+        createCardComment: function (cmdt) {
+            var commDom = '';
+            commDom += '<li data-commid="' + cmdt.commid + '"><a class="head">';
+            commDom += '<img src="' + cmdt.head + '" alt="' + cmdt.name + '"></a>';
+            commDom += '<div class="info qzBtnComment" data-commid="' + cmdt.commid + '" data-name="' + cmdt.name + '">';
+            commDom += '<h5>' + cmdt.name;
+            if (cmdt.reply) {
+                commDom += '<b>回复</b>' + cmdt.reply;
+            }
+            commDom += '</h5>';
+            commDom += '<p class="time">' + cmdt.replytime + '</p>';
+            commDom += '<div class="context">';
+            commDom += cmdt.context;
+            commDom += '</div></div></li>';
+            return commDom;
+        },
+        //插入卡片内评论
+        insertCardComment: function (tar, dt) {
+            var insDom = '';
+            $.each(dt, function (i, item) {
+                //使用返回数据 构建卡片
+                insDom += qzFunc.createCardComment(item);
+            });
+            $(tar).html(insDom);
+        },
+        //插入卡片内更多评论
+        appendCardComment: function (tar, dt) {
+            var insDom = '';
+            $.each(dt, function (i, item) {
+                //使用返回数据 构建卡片
+                insDom += qzFunc.createCardComment(item);
+            });
+            $(tar).append(insDom);
+        },
+        //构建卡片内赞
+        createCardLike: function (lkdt) {
+            var likeDom = '';
+            likeDom += '<li data-likeid="' + lkdt.likeid + '"><a class="head">';
+            likeDom += '<img src="' + lkdt.head + '" alt="' + lkdt.name + '"></a>';
+            likeDom += '<div class="name"><a>' + lkdt.name + '</a></div>';
+            likeDom += '</div></li>';
+            return likeDom;
+        },
+        //插入卡片内赞
+        insertCardLike: function (tar, dt) {
+            var insDom = '';
+            $.each(dt, function (i, item) {
+                //使用返回数据 构建卡片
+                insDom += qzFunc.createCardLike(item);
+            });
+            $(tar).html(insDom);
+        },
+        //插入卡片内更多赞
+        appendCardLike: function (tar, dt) {
+            var insDom = '';
+            $.each(dt, function (i, item) {
+                //使用返回数据 构建卡片
+                insDom += qzFunc.createCardLike(item);
+            });
+            $(tar).append(insDom);
         },
         //打开视频弹窗
         openVideoPop: function () {
@@ -633,75 +994,75 @@
                 videoPop(vdsrc);
             })
         },
-        //百度分享弹窗
-        popBaiduShare:function (url,text) {
-            var that = this;
-            function createPop() {
-                var popDom = '';
-                popDom += '<div class="club-pop-baidu-mask clubPopBaidu clubPopBaiduClose"></div>';
-                popDom += '<div class="club-pop-baidu-main clubPopBaidu">';
-                popDom += '<div class="club-pop-baidu-head">分享</div>';
-
-                popDom += '<div class="club-pop-baidu-body">';
-                popDom += '<div class="club-pop-baidu-btns bdsharebuttonbox" data-tag="share_1"><a class="bds_tsina" data-cmd="tsina"></a><a class="bds_sqq" data-cmd="sqq"></a><a class="bds_qzone" data-cmd="qzone"></a><a class="bds_more" data-cmd="more"></a><a class="bds_count" data-cmd="count"></a></div>';
-                popDom += '</div>';
-
-                popDom += '<div class="club-pop-baidu-foot"><a class="clubPopBaiduClose">取消</a></div>';
-                popDom += '</div>';
-                return popDom;
-            }
-
-            function initBaiduShare() {
-                var baiduSrc = 'http://bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5);
-                window._bd_share_config = {
-                    common : {
-                        bdText : text,
-                        bdDesc : text,
-                        bdUrl : url
-                    },
-                    share : [{
-                        "tag" : "share_1",
-                        "bdSize" : 32
-                    }]
-                };
-                if(typeof _bd_share_main === 'object'){
-                    _bd_share_main.init();
-                }else{
-                    $.getScript(baiduSrc);
-                }
-            }
-
-            function closePop() {
-                var $pop = $('.clubPopBaidu');
-                $pop.removeClass('cur');
-                setTimeout(function () {
-                    $pop.remove();
-                    that.popCommon.close();
-                },250);
-            }
-
-            function showPop() {
-                var popDom = createPop();
-                $('body').append(popDom);
-                that.popCommon.open();
-                setTimeout(function () {
-                    $('.clubPopBaidu').addClass('cur');
-                    initBaiduShare();
-                },50);
-                $('.clubPopBaiduClose').on('click',function () {
-                    closePop();
-                });
-            }
-
-            showPop();
+        //构建全部话题列表
+        createAllTopic: function (dt) {
+            var topicDom = '';
+            topicDom += '<li data-topicid="' + dt.id + '"><a href="' + dt.url + '"><b>#' + dt.title + '#</b><span><i class="num-in">' + dt.countjoin + '</i>人参与<i class="num-comm">' + dt.countcomm + '</i>条讨论</span></a></li>';
+            return topicDom;
         },
-        //global bind
-        globalBind:function () {
-            var $main = $('#qzMain'),that = this;
-            $main.on('click','.qzBtnShare',function () {
-                var $this = $(this),sharetext = $this.data('sharetext'),shareurl = $this.data('shareurl');
-                that.popBaiduShare(shareurl,sharetext);
-            })
+        //插入全部话题列表
+        allTopic: function () {
+            var $topicList = $('#qzAllTopicList');
+            function createList(dt) {
+                var listDom = '';
+                $.each(dt, function (i, item) {
+                    listDom += qzFunc.createAllTopic(item);
+                });
+                $topicList.html(listDom);
+            }
+            function addList(dt) {
+                var listDom = '';
+                $.each(dt, function (i, item) {
+                    listDom += qzFunc.createAllTopic(item);
+                });
+                $topicList.append(listDom);
+            }
+            function getListData() {
+                var dataOriUrl = $topicList.data('from');
+                $.ajax({
+                    dataType: 'script',
+                    url: dataOriUrl,
+                    success: function () {
+                        var listData = fakeAlltopic;
+                        $topicList.attr({ 'data-page': listData.page, 'data-infiload': 'open' });
+                        createList(listData.topiclist);
+                    }
+                })
+            }
+            if ($topicList.length > 0) {
+                getListData();
+                qzFunc.infiniteLoad('#qzAllTopicList', function (tar, tarInsert) {
+                    var $main = $('#qzMain');
+                    $.ajax({
+                        dataType: 'Script',
+                        url: pgMoredataAllTopic,
+                        beforeSend: function () {
+                            //插入加载动画
+                            $main.append(qzConfig.loadingDom);
+                        },
+                        success: function () {
+                            var nowPage = tarInsert.attr('data-page'), dataPage = fakeAlltopic.page;
+                            //加载成功后移除加载动画
+                            $main.find('.qz-loading').remove();
+                            //判断时候还有当前数据页码是否加载完成
+                            if (dataPage > nowPage) {
+                                //设置新页码
+                                tarInsert.attr('data-page', dataPage);
+                                //插入更多数据
+                                addList(fakeAlltopic.topiclist);
+                            } else {
+                                if (tarInsert.attr('data-infiload') === 'open') {
+                                    //全部加载完成 关闭加载
+                                    tarInsert.attr('data-infiload', 'close');
+                                    //插入 全部加载完成 提示
+                                    $main.append(qzConfig.loadedDom);
+                                }
+                            }
+                            qzConfig.isCanLoading = true;
+                        }
+                    })
+                })
+            }
         },
         //入口
         main: function () {
@@ -713,14 +1074,27 @@
             qzFunc.addComment();
             //开启发布/参与
             qzFunc.addContext();
+            //插入测试数据
+            //qzFunc.initPage();
+            //插入测试数据 话题页
+            qzFunc.initPageTopic();
+            //插入测试数据 内容单页
+            qzFunc.initPageContext();
             //列表切换导航
             qzFunc.tabNav();
+            //插入测试数据 模拟无限加载
             qzFunc.infiniteLoad('#qzCardList', function (tar, tarInsert) {
                 tarInsert.getClub();
             });
+            //开启 话题页上部加载更多按钮功能
+            qzFunc.topicMore();
+            //开启 内容单页评论和赞的切换功能
+            qzFunc.tabCl();
             //开启 内容单页 跳转功能
             qzFunc.pageGoto();
-            qzFunc.globalBind();
+            //加载 全部话题 列表
+            qzFunc.allTopic();
+            //旋转屏幕需要执行的函数
             $(window).resize(function () {
                 qzFunc.setRem();
             });
@@ -1067,10 +1441,18 @@
                 success: function (result) {
                     if (result.dataType == "ok") {
                         $this.attr("data-isclick", false);
-                        $(".qzBtnComment[data-clubcontentid=" + clubContentId + "]").html("1").attr("data-commcount", 1);
+                        var $qzClComment = $("#qzClComment");
+                        if ($qzClComment.length > 0) {
+                            var html = qzFunc.createCardComment(result.commlist);
+                            $qzClComment.find("li").length == 0 ? $qzClComment.html(html) : $qzClComment.prepend(html);
+                        }
+                        else {
+                            $(".qzBtnComment[data-clubcontentid=" + clubContentId + "]").html("1").attr("data-commcount", 1);
+                        }
                         //var scrolltopval = $(".qzPop ").scrollTop();
                         $(".qzPop ").removeClass('cur');
                         $('html,body').removeClass('hideScroll').animate({ scrollTop: beforeOpenSt }, 0);
+                        //等待弹层动画执行完后移除弹层
                         setTimeout(function () {
                             $(".qzPop ").remove();
                         }, 250);
@@ -1084,13 +1466,12 @@
     };
     $.fn.getClub = function (callback) {
         return this.each(function () {
-            var $this = $(this),
-                cfg = $(".qzNavFx a.cur").attr("data-cfg"),
-                contentType = clubConfig.listNavSetter[cfg].type,
-                sort = clubConfig.listNavSetter[cfg].sort,
-                pageIndex = parseInt($this.attr("data-pageIndex")) + 1,
-                pageSize = $this.attr("data-pageSize"),
-                loading = $this.attr("data-loading");
+            var $this = $(this);
+            var contentType = $(".qzNavFx a.cur").attr("data-type");
+            var sort = $(".qz-nav-sort").attr("data-sort");
+            var pageIndex = parseInt($this.attr("data-pageIndex")) + 1;
+            var pageSize = $this.attr("data-pageSize");
+            var loading = $this.attr("data-loading");
             if (loading == "true") {
                 return;
             }
@@ -1205,7 +1586,13 @@
                 data: { jsondata: JSON.stringify(jsondata) },
                 success: function (data) {
                     if (data.isElite) {
-                        $(that).find('a[data-cfg="best"]').css("display","block");
+                        $(that).find("a").eq(1).css("display","block");
+                    }
+                    if (data.isPicture) {
+                        $(that).find("a").eq(2).css("display", "block");
+                    }
+                    if (data.isVideo) {
+                        $(that).find("a").eq(3).css("display", "block");
                     }
                     var icon;
                     if(clubId>0){
@@ -1218,11 +1605,22 @@
                 }
             });
         })
-    };
+    }
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+        if (r != null) return unescape(r[2]); return null; //返回参数值
+    }
     qzFunc.main();
     $(document).ready(function () {
         $('#qzCardList').getClub();
         $(".qzNavFx").showNav();
+        $(".qz-nav-sort").change(function (event) {
+            event.preventDefault();
+            var sort = $(this).find('option:selected').attr("data-sort");
+            $(this).attr("data-sort", sort);
+            $("#qzCardList").html("").attr("data-pageIndex", 0).attr("data-loading", false).getClub();
+        });
         $(".joinCount").joinCount();
         var url = "";
         if (clubId > 0) {

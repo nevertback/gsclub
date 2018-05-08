@@ -1,30 +1,6 @@
 (function ($) {
     var jsmodel = 'dev';
-    //todo:2018.03.06 更新 分离Api处理
     var clubApis = {
-        //获取单页评论接口
-        getWapCardComment:function (paramsData,callback,beforeSendFnc) {
-            var apiUrl = "./data/fake.comment.page1.json";
-            $.ajax({
-                type: "get",
-                dataType: "json",
-                url: apiUrl,
-                data: paramsData,
-                beforeSend: function () {
-                    if(typeof beforeSendFnc === 'function'){
-                        beforeSendFnc();
-                    }
-                },
-                success: function (backData) {
-                    if(typeof callback === 'function'){
-                        callback(backData);
-                    }
-                },
-                error:function (err) {
-                    console.log(err)
-                }
-            });
-        },
         //获取单页内容接口
         getWapCardContext:function (paramsData,callback,beforeSendFnc) {
             var apiUrl = "http://192.168.0.100:9014/apis/club/api/getwapcardcontext";
@@ -186,43 +162,9 @@
                 }
             });
         },
-        //获取圈子评论新接口
-        getWapClubCommentwr:function (paramsData,callback,beforeSendFnc) {
-            var apiUrl = "http://192.168.0.100:9014/apis/club/api/getwapclubcommentwr";
-            $.ajax({
-                type: "get",
-                dataType: "jsonP",
-                url: apiUrl,
-                data: paramsData,
-                beforeSend: function () {
-                    if(typeof beforeSendFnc === 'function'){
-                        beforeSendFnc();
-                    }
-                },
-                success: function (backData) {
-                    if(typeof callback === 'function'){
-                        callback(backData);
-                    }
-                },
-                error:function (err) {
-                    console.log(err)
-                }
-            });
-        },
-        //静态页演示用接口，线上不需要保留
-        //获取单页评论第一页接口（接口做静态页演示专用）
-        getWapCardCommentPage1:function (paramsData,callback,beforeSendFnc) {
-            var paramsFmt = JSON.parse(paramsData.jsondata);
-            var pages = paramsFmt.pageIndex,sort = paramsFmt.sort;
-            //模拟传参返回数据
-            var apiUrl = "http://192.168.0.100:9014/apis/club/api/getwapclubcommentwr";
-            if(sort === 0 && pages === 1){
-                apiUrl = "./data/fake.comment.page1.oldest.json";
-            }else if(sort === 0 && pages === 2){
-                apiUrl = "./data/fake.comment.page2.oldest.json";
-            }else if(sort === 1 && pages === 2){
-                apiUrl = "./data/fake.comment.page2.json";
-            }
+        //提交点赞接口
+        addlikecomment:function (paramsData,callback,beforeSendFnc) {
+            var apiUrl = "http://192.168.0.100:9014/apis/club/api/addlikecomment";
             $.ajax({
                 type: "get",
                 dataType: "jsonp",
@@ -243,41 +185,12 @@
                 }
             });
         },
-        //获取单页热门评论（接口做静态页演示专用）
-        getWapCardCommentPageHot:function (paramsData,callback,beforeSendFnc) {
-            var apiUrl = "./data/fake.comment.hot.json";
+        //获取圈子评论新接口
+        getWapClubCommentwr:function (paramsData,callback,beforeSendFnc) {
+            var apiUrl = "http://192.168.0.100:9014/apis/club/api/getwapclubcommentwr";
             $.ajax({
                 type: "get",
-                dataType: "json",
-                url: apiUrl,
-                data: paramsData,
-                beforeSend: function () {
-                    if(typeof beforeSendFnc === 'function'){
-                        beforeSendFnc();
-                    }
-                },
-                success: function (backData) {
-                    if(typeof callback === 'function'){
-                        callback(backData);
-                    }
-                },
-                error:function (err) {
-                    console.log(err)
-                }
-            });
-        },
-        //获取单页评论回复（接口做静态页演示专用）
-        getWapCardCommentReply:function (paramsData,callback,beforeSendFnc) {
-            var paramsFmt = JSON.parse(paramsData.jsondata);
-            var pages = paramsFmt.replyPageIndex;
-            //模拟传参返回数据
-            var apiUrl = "./data/fake.comment.reply.page1.json";
-            if(pages === 3){
-                apiUrl = "./data/fake.comment.reply.page2.json";
-            }
-            $.ajax({
-                type: "get",
-                dataType: "json",
+                dataType: "jsonP",
                 url: apiUrl,
                 data: paramsData,
                 beforeSend: function () {
@@ -456,7 +369,6 @@
             if (cdp.fromUrl) {
                 cardDom += '<div class="from">来自：<a href="' + cdp.fromUrl + '" >' + cdp.from + '</a></div>';
             }
-            //todo:2018-03-13 更新：添加分享按钮，修改排列
             cardDom += '<footer>';
             var workShareText = cdp.text.replace(/<[^>]+>/g,"").substring(0,200);
             cardDom += '<a class="btn-share qzBtnShare" data-sharetext="'+workShareText+'" data-shareurl="'+cdp.url+'">分享</a>';
@@ -471,7 +383,7 @@
         },
         //图片弹出层 默认执行,一般情况不需要修改
         addSwpOnce: function () {
-            var swp = '<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true"><div class="pswp__bg"></div><div class="pswp__scroll-wrap"><div class="pswp__container"><div class="pswp__item"></div><div class="pswp__item"></div><div class="pswp__item"></div></div><div class="pswp__ui pswp__ui--hidden"><div class="pswp__top-bar"><div class="pswp__counter"></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button><a target="_blank" class="pswp__button pswpBtnOrigin pswp__single-tap" title="查看原图"></a> <button class="pswp__button pswp__button--share" title="Share"></button> <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button> <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class="pswp__preloader"><div class="pswp__preloader__icn"><div class="pswp__preloader__cut"><div class="pswp__preloader__donut"></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class="pswp__share-tooltip"></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button> <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class="pswp__caption"><div class="pswp__caption__center"></div></div></div></div></div>';
+            var swp = '<div class="pswp pswpClub" tabindex="-1" role="dialog" aria-hidden="true"><div class="pswp__bg"></div><div class="pswp__scroll-wrap"><div class="pswp__container"><div class="pswp__item"></div><div class="pswp__item"></div><div class="pswp__item"></div></div><div class="pswp__ui pswp__ui--hidden"><div class="pswp__top-bar"><div class="pswp__counter"></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button><a target="_blank" class="pswp__button pswpBtnOrigin pswp__single-tap" title="查看原图"></a> <button class="pswp__button pswp__button--share" title="Share"></button> <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button> <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class="pswp__preloader"><div class="pswp__preloader__icn"><div class="pswp__preloader__cut"><div class="pswp__preloader__donut"></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class="pswp__share-tooltip"></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button> <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class="pswp__caption"><div class="pswp__caption__center"></div></div></div></div></div>';
             $('body').append(swp);
         },
         //图片弹出层方法 默认执行,一般情况不需要修改
@@ -545,7 +457,7 @@
                 };
 
                 var openPhotoSwipe = function (index, galleryElement, disableAnimation, fromURL) {
-                    var pswpElement = $('.pswp')[0],
+                    var pswpElement = $('.pswpClub')[0],
                         gallery,
                         options,
                         items;
@@ -589,14 +501,14 @@
                     gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, options);
                     gallery.init();
                     function setOrigin(num) {
-                        $('.pswpBtnOrigin').attr('href', items[num].ori)
+                        $('.pswpClub .pswpBtnOrigin').attr('href', items[num].ori)
                     }
                     gallery.listen('initialZoomIn', function () {
                         setOrigin(gallery.getCurrentIndex());
-                        $('.pswp').animate({ 'opacity': 1 }, 333);
+                        $('.pswpClub').animate({ 'opacity': 1 }, 333);
                     });
                     gallery.listen('initialZoomOut', function () {
-                        $('.pswp').animate({ 'opacity': 0 }, 200);
+                        $('.pswpClub').animate({ 'opacity': 0 }, 200);
                     });
                     gallery.listen('afterChange', function () {
                         setOrigin(gallery.getCurrentIndex());
@@ -815,7 +727,6 @@
                     }
                 });
             });
-            //todo:2018.03.06 更新 绑定弹出回复
             function commentInner(tar) {
                 tar.UserOnline(function (response) {
                     if (response.status == 'ok' || jsmodel === 'dev') {
@@ -891,7 +802,6 @@
         initPageContext: function () {
             var tar = '#qzCardContext', tarInsert = $(tar);
             if (tarInsert.length > 0) {
-                //todo:2018.03.06 更新 生成内容单页
                 var gcContextJsondata = {
                     clubContentId: tarInsert.attr("data-cid")
                 };
@@ -907,7 +817,6 @@
                 },function () {
                     tarInsert.append(qzConfig.loadingDom);
                 });
-                //todo:2018.03.15 更新 生成内容单页评论 vue重构
                 var vCardPage = {
                     vmBuild:function () {
                         var cid = $('#clubCardComment').data('cid');
@@ -993,19 +902,46 @@
                                 <li>\
                                     <a class="head"><img :src="item.head" :alt="item.name"></a>\
                                     <div class="info">\
-                                        <h5>{{item.name}}<a class="info-like">{{item.replyLike}}</a></h5>\
+                                        <h5>{{item.name}}<a class="info-like qzCardLike" @click="qzCardLike(item.commId)">{{item.replyLike}}</a></h5>\
                                         <div class="info-others"><span class="info-time">{{item.replyTime}}</span></div>\
                                         <div class="context qzBtnCommentInner" :data-clubcontentid="item.clubContentId" :data-commid="item.commid" :data-name="item.name" :data-userid="item.useId" v-html="item.context"></div>\
                                         <comm-line v-if="item.replyCount>0" :count="item.replyCount" :cid="item.clubContentId" :rld="item.reply" :commid="item.commId"></comm-line>\
                                      </div>\
                                 </li>\
                             ',
+                            data:function(){
+                                return {
+                                    item:[]
+                                };
+                            },
                             props:['item'],
                             components:{
                                 CommLine:CommLine
                             },
                             mounted:function () {
-                                this.item.reply = this.item
+
+                            },
+                            methods:{
+                                qzCardLike:function (cid) {
+                                    var _this = this;
+                                    $(this).UserOnline(function (response) {
+                                        if (response.status == 'ok' || jsmodel === 'dev') {
+                                            var jsondata = {
+                                                commentId: cid,
+                                                fromDevice: 1,
+                                            };
+                                            var transData = {jsondata: JSON.stringify(jsondata)};
+                                            clubApis.addlikecomment(transData,function (responseJson) {
+                                                if (responseJson.status == "err") {
+                                                    alert(responseJson.body);
+                                                }
+                                                else {
+                                                    _this.item.replyLike++
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
                             }
                         };
                         var CommHot = {
@@ -1013,7 +949,7 @@
                                 <div v-if="hotshow" class="club-card-comment-list-hot">\
                                     <h4>热门评论</h4>\
                                     <ul class="club-card-comment-list">\
-                                        <comm-li v-for="item in lists" :item="item"></comm-li>\
+                                        <comm-li v-for="(item,idx) in lists" :item="item" :key="idx"></comm-li>\
                                     </ul>\
                                 </div>\
                             ',
@@ -1029,16 +965,16 @@
                                         clubContentId: cid,
                                         isHot:1,
                                         pageIndex: that.page,
-                                        pageSize: 1000 //热门默认全部显示
+                                        pageSize: 1000,
+                                        replyPageIndex:1,
+                                        replyPageSize:2
                                     },
                                     reqDataFmt = {jsondata: JSON.stringify(reqData)};
                                 clubApis.getWapClubCommentwr(reqDataFmt,function (res) {
                                     if (res.errorCode === 0) {
                                         var result = res.result;
-                                        if(result.count > 0){
-                                            that.hotshow = true;
-                                            that.lists = result.commlist;
-                                        }
+                                        that.hotshow = true;
+                                        that.lists = result.commlist;
                                     }else{
                                         console.log(res.errorMessage)
                                     }
@@ -1343,7 +1279,6 @@
             commDom += '</div></div></li>';
             return commDom;
         },
-        //todo 2018-03-14 更新 构建单页评论内回复
         createCommentReply:function (replyData,cid) {
             var reDom = '';
             reDom += '<div class="ic-item qzBtnCommentInner" data-clubcontentid="'+cid+'" data-commid="'+replyData.commid+'" data-name="'+replyData.name+'" data-userid="'+replyData.useId+'"><a class="ici-name">'+replyData.name+'</a>';
@@ -1353,7 +1288,6 @@
             reDom += '<a class="ici-name">：&nbsp;</a><span class="ici-context">'+replyData.context+'</span></div>';
             return reDom;
         },
-        //todo:2018.03.13 更新 构建卡片内评论
         createCardCommentFull: function (cmdt) {
             var commDom = '',that = this;
             commDom += '<li data-commid="' + cmdt.commid + '"';
@@ -1407,7 +1341,6 @@
             commDom += '</div></div></li>';
             return commDom;
         },
-        //todo:2018.03.06 更新 重构卡片内评论
         insertCardComment: function (tar, dt , addMore) {
             var insDom = '';
             $.each(dt, function (i, item) {
@@ -1579,7 +1512,6 @@
                 })
             }
         },
-        //todo 2018-03-13 更新：添加百度分享
         //百度分享弹窗
         popBaiduShare:function (url,text) {
             var that = this;
@@ -1875,7 +1807,6 @@
             });
         })
     };
-    //todo:2018-03-13 更新：修改排序
     $.fn.getClub = function (callback) {
         return this.each(function () {
             var $this = $(this),
@@ -1954,7 +1885,6 @@
             });
         });
     };
-    //todo 2018-03-13 更新：修复点赞样式
     //获取点赞数据
     $.fn.like = function () {
         var support = "";
@@ -1981,7 +1911,6 @@
             }
         });
     };
-    //todo 2018-03-13 更新：修复点赞样式
     //添加点赞
     $.fn.addLike = function (options) {
         return this.each(function () {
@@ -2046,7 +1975,6 @@
         }
         commentDo();
     };
-    //todo:2018-03-13 更新：注释掉卡片内回复
     //卡片列表内评论
     $.fn.insertListComment = function () {
         var $this = $(this);

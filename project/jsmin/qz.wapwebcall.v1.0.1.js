@@ -67,11 +67,35 @@
     var qzFunc = {
         //设置屏幕缩放
         setRem: function () {
-            var pw = $(window).width();
+            var pw = $(window).width(),$clubDad = $('#QZCMT'),scaleSize = $clubDad.attr('data-scale');
             if (pw >= 640) {
                 pw = 640;
             }
-            $('html').css({ 'font-size': pw / 6.4 + 'px' });
+            if(parseInt(scaleSize) === 720){
+                var insertStyle = '';
+                insertStyle += '<style>';
+                insertStyle += '.qz-video-pop .qz-video-pop-con iframe{width:7.2rem;height:4.05rem}\n' +
+                    '.ymw-backtotop a{width:.7rem;height:.7rem}\n' +
+                    '.qzFixSmt{bottom:1.1rem;width:.7rem;height:.7rem;background-size:.3375rem .315rem;background-position:.22rem .2025rem}\n';
+                insertStyle += '</style>';
+                $('head').append(insertStyle);
+                $qzMain.css({
+                    margin:0
+                });
+                $qzMain.find('.qz-card-top,.qz-box').css({
+                    'transform-origin':'0 0',
+                    'transform':'scale('+720/640+')',
+                    'margin':0
+                });
+                function setDadHeight() {
+                    var innerHt = $qzMain.height(),scaleHeight;
+                    scaleHeight = (innerHt+0.15/6.4*pw)*720/640;
+                    $clubDad.css('height',scaleHeight);
+                }
+                setInterval(setDadHeight,200);
+            }else{
+                $('html').css({ 'font-size': pw / 6.4 + 'px' });
+            }
         },
         //弹窗公用方法
         popCommon:{
@@ -169,7 +193,7 @@
         },
         //图片弹出层 默认执行,一般情况不需要修改
         addSwpOnce: function () {
-            var swp = '<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true"><div class="pswp__bg"></div><div class="pswp__scroll-wrap"><div class="pswp__container"><div class="pswp__item"></div><div class="pswp__item"></div><div class="pswp__item"></div></div><div class="pswp__ui pswp__ui--hidden"><div class="pswp__top-bar"><div class="pswp__counter"></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button><a target="_blank" class="pswp__button pswpBtnOrigin pswp__single-tap" title="查看原图"></a> <button class="pswp__button pswp__button--share" title="Share"></button> <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button> <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class="pswp__preloader"><div class="pswp__preloader__icn"><div class="pswp__preloader__cut"><div class="pswp__preloader__donut"></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class="pswp__share-tooltip"></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button> <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class="pswp__caption"><div class="pswp__caption__center"></div></div></div></div></div>';
+            var swp = '<div class="pswp pswpClub" tabindex="-1" role="dialog" aria-hidden="true"><div class="pswp__bg"></div><div class="pswp__scroll-wrap"><div class="pswp__container"><div class="pswp__item"></div><div class="pswp__item"></div><div class="pswp__item"></div></div><div class="pswp__ui pswp__ui--hidden"><div class="pswp__top-bar"><div class="pswp__counter"></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button><a target="_blank" class="pswp__button pswpBtnOrigin pswp__single-tap" title="查看原图"></a> <button class="pswp__button pswp__button--share" title="Share"></button> <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button> <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class="pswp__preloader"><div class="pswp__preloader__icn"><div class="pswp__preloader__cut"><div class="pswp__preloader__donut"></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class="pswp__share-tooltip"></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button> <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class="pswp__caption"><div class="pswp__caption__center"></div></div></div></div></div>';
             $('body').append(swp);
         },
         //图片弹出层方法 默认执行,一般情况不需要修改
@@ -242,7 +266,7 @@
                 };
 
                 var openPhotoSwipe = function (index, galleryElement, disableAnimation, fromURL) {
-                    var pswpElement = $('.pswp')[0],
+                    var pswpElement = $('.pswpClub')[0],
                         gallery,
                         options,
                         items;
@@ -286,14 +310,14 @@
                     gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, options);
                     gallery.init();
                     function setOrigin(num) {
-                        $('.pswpBtnOrigin').attr('href', items[num].ori)
+                        $('.pswpClub .pswpBtnOrigin').attr('href', items[num].ori)
                     }
                     gallery.listen('initialZoomIn', function () {
                         setOrigin(gallery.getCurrentIndex());
-                        $('.pswp').animate({ 'opacity': 1 }, 333);
+                        $('.pswpClub').animate({ 'opacity': 1 }, 333);
                     });
                     gallery.listen('initialZoomOut', function () {
-                        $('.pswp').animate({ 'opacity': 0 }, 200);
+                        $('.pswpClub').animate({ 'opacity': 0 }, 200);
                     });
                     gallery.listen('afterChange', function () {
                         setOrigin(gallery.getCurrentIndex());
@@ -570,8 +594,7 @@
             var openId = $('.qz-card-list');
             openId.on('click', '.qzCard .qzZoneHref', function () {
                 var $this = $(this), url = $this.data('href');
-                //window.location.href = url;
-                window.open(url, '_blank');
+                window.location.href = url;
             });
             openId.on('click', '.qzZoneHref figure,.qzZoneHref a', function (event) {
                 event.stopPropagation();
@@ -705,7 +728,7 @@
     };
     $.fn.UserOnline = function (fun) {
         $.ajax({
-            type: "GET", dataType: "jsonp", url: "http://i.gamersky.com/api/logincheck",
+            type: "GET", dataType: "jsonp", url: "//i.gamersky.com/api/logincheck",
             success: function (responseJson) {
                 if (responseJson.status !== "ok") {
                     $(".ymw-loginpop-btns").insertYmwLoginPop();
@@ -722,11 +745,11 @@
         $this.on("click", "#qqLogin", function (event) {
             event.preventDefault();
             var returnUrl = window.location.href;
-            window.location.href = "http://i.gamersky.com/oauth/authorizelogin?authorizetype=qq&returnUrl=" + encodeURI(returnUrl);
+            window.location.href = "//i.gamersky.com/oauth/authorizelogin?authorizetype=qq&returnUrl=" + encodeURI(returnUrl);
         }).on("click", "#sinaLogin", function (event) {
             event.preventDefault();
             var returnUrl = window.location.href;
-            window.location.href = "http://i.gamersky.com/oauth/authorizelogin?authorizetype=sina&returnUrl=" + encodeURI(returnUrl);
+            window.location.href = "//i.gamersky.com/oauth/authorizelogin?authorizetype=sina&returnUrl=" + encodeURI(returnUrl);
         })
     };
     $.fn.insertYmwLoginPop = function () {
@@ -744,7 +767,7 @@
                     dataType: 'json',
                     crossDomain: true,
                     maxFileSize: '5000000',//5M
-                    url: 'http://i.gamersky.com/uploadpic/index',
+                    url: '//i.gamersky.com/uploadpic/index',
                     done: function (e, data) {
                         var result = data.result;
                         if (result.status == "ok") {
@@ -768,7 +791,7 @@
                                     var len = $(".qz-pic-list-li").not(":last").length;
                                     $(this).parent(".qz-pic-list-li").remove();
                                     $.ajax({
-                                        type: "get", dataType: "json", url: "http://i.gamersky.com/uploadpic/delete?origin=" + original,
+                                        type: "get", dataType: "json", url: "//i.gamersky.com/uploadpic/delete?origin=" + original,
                                         data: {},
                                         success: function (responseJson) {
                                         }
@@ -890,7 +913,7 @@
                     xhrFields: {
                         withCredentials: true
                     },
-                    url: "http://i.gamersky.com/club/api/addclubcontent",
+                    url: "//i.gamersky.com/club/api/addclubcontent",
                     data: { "jsondata": JSON.stringify(jsondata) },
                     success: function (result) {
                         if (result.dataType == "ok") {
@@ -930,7 +953,7 @@
             clubContentId: support
         };
         $.ajax({
-            type: "get", dataType: "jsonp", url: "http://i.gamersky.com/club/api/getlike",
+            type: "get", dataType: "jsonp", url: "//i.gamersky.com/club/api/getlike",
             data: { jsondata: JSON.stringify(jsondata) },
             success: function (data) {
                 if (data.status == "ok") {
@@ -960,7 +983,7 @@
                             fromDevice: 1,
                         };
                         $.ajax({
-                            type: "get", dataType: "jsonp", url: "http://i.gamersky.com/club/api/addlike",
+                            type: "get", dataType: "jsonp", url: "//i.gamersky.com/club/api/addlike",
                             data: { jsondata: JSON.stringify(jsondata) },
                             success: function (result) {
                                 if (result.status == "err") {
@@ -990,7 +1013,7 @@
             clubContentId: support
         };
         $.ajax({
-            type: "get", dataType: "jsonp", url: "http://i.gamersky.com/club/api/getcommentcount",
+            type: "get", dataType: "jsonp", url: "//i.gamersky.com/club/api/getcommentcount",
             data: { jsondata: JSON.stringify(jsondata) },
             success: function (data) {
                 if (data.status == "ok") {
@@ -1039,7 +1062,7 @@
                 xhrFields: {
                     withCredentials: true
                 },
-                url: "http://i.gamersky.com/club/api/addcomment",
+                url: "//i.gamersky.com/club/api/addcomment",
                 data: { "jsondata": JSON.stringify(jsondata) },
                 success: function (result) {
                     if (result.dataType == "ok") {
@@ -1098,7 +1121,7 @@
             $.ajax({
                 type: "get",
                 dataType: "jsonp",
-                url: "http://i.gamersky.com/club/api/getwebcallclubcontent",
+                url: "//i.gamersky.com/club/api/getwebcallclubcontent",
                 data: { "jsondata": JSON.stringify(jsondata) },
                 beforeSend: function () {
                     //插入加载动画
@@ -1162,7 +1185,7 @@
             topicId: topicId
         };
         $.ajax({
-            type: "get", dataType: "jsonp", url: "http://i.gamersky.com/club/api/getjoincount",
+            type: "get", dataType: "jsonp", url: "//i.gamersky.com/club/api/getjoincount",
             data: { jsondata: JSON.stringify(jsondata) },
             success: function (data) {
                 $(".joinCount").find("p span").eq(0).html(data.join + "人");
@@ -1178,7 +1201,7 @@
                 topicId: topicId
             };
             $.ajax({
-                type: "get", dataType: "jsonp", url: "http://i.gamersky.com/club/api/isshownav",
+                type: "get", dataType: "jsonp", url: "//i.gamersky.com/club/api/isshownav",
                 data: { jsondata: JSON.stringify(jsondata) },
                 success: function (data) {
                     if (data.isElite) {
@@ -1204,11 +1227,11 @@
         var url = "";
         if (clubId > 0) {
             $(".qwqz").html("前往圈子");
-            url = "http://i.gamersky.com/m/club/" + clubId + "";
+            url = "//i.gamersky.com/m/club/" + clubId + "";
         }
         if (topicId > 0) {
             $(".qwqz").html("前往话题");
-            url = clubId > 0 ? "http://i.gamersky.com/m/topic/" + topicId + "?club=" + clubId + "" : "http://i.gamersky.com/m/topic/" + topicId + "";
+            url = clubId > 0 ? "//i.gamersky.com/m/topic/" + topicId + "?club=" + clubId + "" : "//i.gamersky.com/m/topic/" + topicId + "";
         }
         $(".qwqz").attr("href", url);
     });
