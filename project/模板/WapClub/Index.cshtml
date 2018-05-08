@@ -1,0 +1,112 @@
+﻿@using HS.GamerSky.Web.Model.Club
+@using HS.GamerSky.Web.BusinessLogic.Club
+@using HS.GamerSky.Web.BusinessLogic.Users
+@using HS.GamerSky.Web.Model.Users
+@using HS.GamerSky.Web
+@using Autofac
+@using HS.GamerSky.Web.Search
+@using HS.GamerSky.Framework.Common
+@using HS.GamerSky.Foundation
+
+@inherits WebViewPage<ClubInfo>
+@{
+	ViewBag.Title = Model.Title + " _ 游民星空 GamerSky.com";
+	Layout = "~/Views/Shared/_LayoutWapClub.cshtml";
+	ClubSettingInfo clubSettingInfo = SearchEngineStarter.Container.Resolve<ClubSettingManage>().GetClubSettingInfo();
+	TopicManage topicManage = SearchEngineStarter.Container.Resolve<TopicManage>();
+	ClubManage clubManage = SearchEngineStarter.Container.Resolve<ClubManage>();
+	ActiveUserManage activeUserManage = SearchEngineStarter.Container.Resolve<ActiveUserManage>();
+	List<ActiveUserInfo> activeList = activeUserManage.GetClubInfoByUpdateTime(Model.Id);
+	List<TopicInfo> topicList = topicManage.GetSearchTopicInfo(Model.Id);
+	List<ClubInfo> clubList = clubManage.GetHostClubList();
+	var wapTopImage = Model.WapTopImage != "" ? Model.WapTopImage : "//image.gamersky.com/webimg15/user/club/wap/exp/top-qz.png";
+	var wapIcon = Model.WapIcon != "" ? Model.WapIcon : "//image.gamersky.com/webimg15/user/club/wap/exp/icon-qz-topic.png";
+	string areaContent = ContentManage.GetCacheAreaByName("圈子-wap推荐话题");
+	//是否有加精
+	SearchContent searchContent = SearchContent.GetSearchContenter();
+	bool isElite = searchContent.GetContentType(Model.Id, 0, 1);
+	bool isHot = searchContent.GetContentType(Model.Id, 2, 0);
+	bool IsPicture = searchContent.GetContentType(Model.Id, 0, 2);
+	bool isVideo = searchContent.GetContentType(Model.Id, 0, 3);
+	string topic = "";
+	int topicId = Request.QueryString["topic"].ToInt32();
+	var themeNum = Model.ThemeNum;
+	if (topicId > 0)
+	{
+		TopicInfo topicInfo = topicManage.GetTopicInfoById(topicId);
+		topic = topicInfo.Title;
+	}
+	if (clubSettingInfo.IsAwaitContent)
+	{
+		int checkCount = searchContent.GetSearchCountByCheck(0, Model.Id, new List<object>() { 0 });
+		themeNum += checkCount;
+	}
+	string style = "display:block";
+	bool isManage = false;
+	string userId = "";
+	if (PEContext.Current.User.Identity.IsAuthenticated)
+	{
+		userId = PEContext.Current.User.UserId.ToString();
+		if (Model.UserId.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Contains(userId))
+		{
+			isManage = true;
+		}
+	}
+	if (isManage == false && Model.BanToPost == true)
+	{
+		style = "display:none";
+	}
+}
+<hidden class="clubId" data-clubId="@Model.Id" data-selectClubId="@Model.Id"></hidden>
+<hidden class="topic" data-topic="" data-topicId="0" data-selectTopic="@topic"></hidden>
+<div class="qzMain" id="qzMain">
+	<!--圈子页 上部 begin-->
+	<section class="qz-top">
+		<img src="@wapTopImage" alt="" class="bg">
+		<a class="icon">
+			<img src="@wapIcon" alt="">
+		</a>
+		<div class="intro">
+			<h5>@Model.Title</h5>
+			<p>@Model.Intro</p>
+			<p><span>@Model.JoinNum 人</span>参与&nbsp;&nbsp;&nbsp;&nbsp;<span>@themeNum</span>条主题</p>
+		</div>
+		<div class="btnarea" style="@style">
+			<a class="btn qzBtnContext">发布内容</a>
+		</div>
+	</section>
+	<!--圈子页 上部 end-->
+	<!-- 推荐话题 -->
+	@{
+		if (!string.IsNullOrWhiteSpace(areaContent))
+		{
+			@Html.Raw(areaContent);
+		}
+	}
+	<section class="qz-box qzIndex">
+		<!--圈子页导航-->
+		<div class="qzNavPos"></div>
+		<aside class="qz-nav qzNavFxW">
+			<nav class="clearfix qzNavFx">
+				<a class="cur" data-cfg="new">最新</a>
+				@if (isHot)
+				{
+					<a data-cfg="hot">最热</a>
+				}
+				@if (isElite)
+				{
+					<a data-cfg="best">精品</a>
+				}
+			</nav>
+			<select class="clubList" style="display:none">
+				<option value="">发往圈子</option>
+				@foreach (var item in clubList)
+				{
+					<option value="@item.Id">@item.Title</option>
+				}
+			</select>
+		</aside>
+		<!--圈子页导航 end-->
+		<div class="qz-card-list" id="qzCardList" data-pageIndex="0" data-pageSize="10" data-loading="false" data-infiload="close"></div>
+	</section>
+</div>
