@@ -1,8 +1,8 @@
 (function ($) {
     var OperationMode = 'dev'; // dev | online;
-    var qzScript = 'http://j.gamersky.com/user/club/wap/js/qz.wapwebcall.v1.0.1.js',
-        qzLinkUrl = 'http://j.gamersky.com/user/club/wap/css/qz.wap.css',
-        qzPSW = 'http://j.gamersky.com/css/g/lib/??photoswipe.min.css,default-skin.min.css',
+    var qzScript = '//j.gamersky.com/user/club/wap/js/qz.wapwebcall.v1.0.1.js',
+        qzLinkUrl = '//j.gamersky.com/user/club/wap/css/qz.wap.css',
+        qzPSW = '//j.gamersky.com/css/g/lib/??photoswipe.min.css,default-skin.min.css',
         qzLink,
         clubOuter = $('#QZCMT'),
         coProp = {
@@ -12,9 +12,9 @@
             pageIndex: clubOuter.attr('data-pageIndex')
         },
         jsLibs = [
-            'http://j.gamersky.com/g/lib/photoswipe.min.js',
-            'http://j.gamersky.com/g/lib/photoswipe-ui-default.min.js',
-            'http://j.gamersky.com/file/ajaxfileupload.js'
+            '//j.gamersky.com/g/lib/photoswipe.min.js',
+            '//j.gamersky.com/g/lib/photoswipe-ui-default.min.js',
+            '//j.gamersky.com/file/ajaxfileupload.js'
         ];
     if(OperationMode === 'dev'){
         qzScript = 'js/qz.wapwebcall.v1.0.1.js';
@@ -25,7 +25,7 @@
         var qzMainDom = '';
         qzMainDom = '<div class="qzMain qzOuter" id="qzMain" clubid="' + coProp.clubId + '" topicid="' + coProp.topicId + '" topic="' + coProp.topic + '">' +
             '<section class="qz-card-top">' +
-            '<a class="icon"><img src="http://image.gamersky.com/webimg15/user/club/wap/exp/icon-qz.png" alt="示例icon"></a>' +
+            '<a class="icon"><img src="//image.gamersky.com/webimg15/user/club/wap/exp/icon-qz.png" alt="示例icon"></a>' +
             '<div class="intro joinCount">' +
             '<h5>网友评论</h5>' +
             '<p><span>0人</span>参与&nbsp;&nbsp;&nbsp;&nbsp;<span>0</span>条内容 </p>' +
@@ -53,7 +53,7 @@
         if ($('.gsZpPop').length < 1) {
             $.ajax({
                 dataType: 'Script',
-                url: 'http://j.gamersky.com/wap/component/loginpop/login.wap.pop.js',
+                url: '//j.gamersky.com/wap/component/loginpop/login.wap.pop.js',
                 cache: true,
                 success: function () {
                     $.componentLoginPop(640);

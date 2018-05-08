@@ -1,9 +1,12 @@
 (function ($) {
-    var jsmodel = 'dev';
+    var jsmodel = 'dev',commonApiUrl = '//i.gamersky.com/';
+    if(jsmodel === 'dev'){
+        commonApiUrl = '//192.168.0.100:9014/apis/';
+    }
     var clubApis = {
         //获取单页内容接口
         getWapCardContext:function (paramsData,callback,beforeSendFnc) {
-            var apiUrl = "http://192.168.0.100:9014/apis/club/api/getwapcardcontext";
+            var apiUrl = commonApiUrl+"club/api/getwapcardcontext";
             $.ajax({
                 type: "get",
                 dataType: "json",
@@ -26,7 +29,7 @@
         },
         //获取圈子列表数据接口
         getWapClubContext:function (paramsData,callback,beforeSendFnc) {
-            var apiUrl = "http://192.168.0.100:9014/apis/club/api/getwapclubcontent";
+            var apiUrl = commonApiUrl+"club/api/getwapclubcontent";
             $.ajax({
                 type: "get",
                 dataType: "json",
@@ -49,7 +52,7 @@
         },
         //获取圈子评论数接口
         getCommentCount:function (paramsData,callback,beforeSendFnc) {
-            var apiUrl = "http://192.168.0.100:9014/apis/club/api/getcommentcount";
+            var apiUrl = commonApiUrl+"club/api/getcommentcount";
             $.ajax({
                 type: "get",
                 dataType: "jsonp",
@@ -72,7 +75,7 @@
         },
         //获取圈子评论接口
         getWapClubComment:function (paramsData,callback,beforeSendFnc) {
-            var apiUrl = "http://192.168.0.100:9014/apis/club/api/getwapclubcomment";
+            var apiUrl = commonApiUrl+"club/api/getwapclubcomment";
             $.ajax({
                 type: "get",
                 dataType: "json",
@@ -95,7 +98,7 @@
         },
         //获取点赞带头像数据接口
         getwapclubuserlike:function (paramsData,callback,beforeSendFnc) {
-            var apiUrl = "http://192.168.0.100:9014/apis/club/api/getwapclubuserlike";
+            var apiUrl = commonApiUrl+"club/api/getwapclubuserlike";
             $.ajax({
                 type: "get",
                 dataType: "json",
@@ -118,7 +121,7 @@
         },
         //获取点赞数据接口
         getLike:function (paramsData,callback,beforeSendFnc) {
-            var apiUrl = "http://192.168.0.100:9014/apis/club/api/getlike";
+            var apiUrl = commonApiUrl+"club/api/getlike";
             $.ajax({
                 type: "get",
                 dataType: "jsonp",
@@ -141,7 +144,7 @@
         },
         //提交点赞接口
         addLike:function (paramsData,callback,beforeSendFnc) {
-            var apiUrl = "http://192.168.0.100:9014/apis/club/api/addlike";
+            var apiUrl = commonApiUrl+"club/api/addlike";
             $.ajax({
                 type: "get",
                 dataType: "jsonp",
@@ -164,7 +167,7 @@
         },
         //提交点赞接口
         addlikecomment:function (paramsData,callback,beforeSendFnc) {
-            var apiUrl = "http://192.168.0.100:9014/apis/club/api/addlikecomment";
+            var apiUrl = commonApiUrl+"club/api/addlikecomment";
             $.ajax({
                 type: "get",
                 dataType: "jsonp",
@@ -187,7 +190,7 @@
         },
         //获取圈子评论新接口
         getWapClubCommentwr:function (paramsData,callback,beforeSendFnc) {
-            var apiUrl = "http://192.168.0.100:9014/apis/club/api/getwapclubcommentwr";
+            var apiUrl = commonApiUrl+"club/api/getwapclubcommentwr";
             $.ajax({
                 type: "get",
                 dataType: "jsonP",
@@ -758,7 +761,7 @@
             var tar = '#qzCardListTopic', tarInsert = $(tar);
             if (tarInsert.length > 0) {
                 //获取数据，具体参数和方式后端自定义
-                var dt = "http://192.168.0.100:9014/apis/club/api/GetWapClubContentByTopic";
+                var dt = commonApiUrl+"club/api/GetWapClubContentByTopic";
                 var clubId = $(".clubId").attr("data-selectClubId");
                 var topicTitle = $(".topic").attr("data-topic");
                 var jsondata = {
@@ -1135,7 +1138,7 @@
                 //判断列表是否开启查看更多
                 if (tarInsert.length > 0 && tarInsert.attr('data-moreload') === 'open') {
                     //获取数据，具体参数和方式后端自定义
-                    var dt = "http://192.168.0.100:9014/apis/club/api/GetWapClubContentByTopic";
+                    var dt = commonApiUrl+"club/api/GetWapClubContentByTopic";
                     var clubId = $(".clubId").attr("data-selectClubId");
                     var topicTitle = $(".topic").attr("data-topic");
                     var excludeclubContentId = tarInsert.find(".qzCard").attr("data-cid");
@@ -1431,13 +1434,13 @@
         //构建全部话题列表
         createAllTopic: function (dt) {
             var topicDom = '';
-            topicDom += '<li data-topicid="' + dt.Id + '" data-topic="' + dt.Title + '"><a href="http://192.168.0.100:9014/apis/m/topic/' + dt.Id + '"><b>' + dt.Title + '</b><span><i class="num-in">0</i>人参与<i class="num-comm">0</i>条主题</span></a></li>';
+            topicDom += '<li data-topicid="' + dt.Id + '" data-topic="' + dt.Title + '"><a href=commonApiUrl+"m/topic/' + dt.Id + '"><b>' + dt.Title + '</b><span><i class="num-in">0</i>人参与<i class="num-comm">0</i>条主题</span></a></li>';
             return topicDom;
         },
         //插入全部话题列表
         allTopic: function () {
             var $topicList = $('#qzAllTopicList');
-            var dataOriUrl = "http://192.168.0.100:9014/apis/club/api/gettopicall";
+            var dataOriUrl = commonApiUrl+"club/api/gettopicall";
             var pageSize = $topicList.attr("data-pageSize");
             function createList(dt) {
                 var listDom = '';
@@ -1712,7 +1715,7 @@
                 $.ajax({
                     type: "post",
                     dataType: "json",
-                    url: "http://192.168.0.100:9014/apis/club/api/addclubcontent",
+                    url: commonApiUrl+"club/api/addclubcontent",
                     data: { "jsondata": JSON.stringify(jsondata) },
                     success: function (result) {
                         if (result.dataType == "ok") {
@@ -1745,7 +1748,7 @@
                 $('#fileupload').fileupload({
                     dataType: 'json',
                     maxFileSize: '5000000',//5M
-                    url: 'http://192.168.0.100:9014/apis/uploadpic/index',
+                    url: commonApiUrl+'uploadpic/index',
                     done: function (e, data) {
                         var result = data.result;
                         if (result.status == "ok") {
@@ -1769,7 +1772,7 @@
                                     var len = $(".qz-pic-list-li").not(":last").length;
                                     $(this).parent(".qz-pic-list-li").remove();
                                     $.ajax({
-                                        type: "get", dataType: "json", url: "http://192.168.0.100:9014/apis/uploadpic/delete?origin=" + original,
+                                        type: "get", dataType: "json", url: commonApiUrl+"uploadpic/delete?origin=" + original,
                                         data: {},
                                         success: function (responseJson) {
                                         }
@@ -1797,7 +1800,7 @@
                             }
                             else {
                                 if (item.size / 1024 <= settingSize) {
-                                    var html = '<div class="qz-pic-list-li temp"><img src="http://image.gamersky.com/webimg15/user/club/pc/loading.gif" ></div>';
+                                    var html = '<div class="qz-pic-list-li temp"><img src="//image.gamersky.com/webimg15/user/club/pc/loading.gif" ></div>';
                                     $(".qz-pic-list-li:first").before(html);
                                 }
                             }
@@ -2022,7 +2025,7 @@
             topic: topic
         };
         $.ajax({
-            type: "get", dataType: "jsonp", url: "http://192.168.0.100:9014/apis/club/api/getjoinarraycount",
+            type: "get", dataType: "jsonp", url: commonApiUrl+"club/api/getjoinarraycount",
             data: { jsondata: JSON.stringify(jsondata) },
             success: function (data) {
                 if (data.status == "ok") {
@@ -2049,7 +2052,7 @@
             topic: topic
         };
         $.ajax({
-            type: "get", dataType: "jsonp", url: "http://192.168.0.100:9014/apis/club/api/getjoinarraycount",
+            type: "get", dataType: "jsonp", url: commonApiUrl+"club/api/getjoinarraycount",
             data: { jsondata: JSON.stringify(jsondata) },
             success: function (data) {
                 if (data.status == "ok") {
@@ -2093,7 +2096,7 @@
             $.ajax({
                 type: "post",
                 dataType: "json",
-                url: "http://192.168.0.100:9014/apis/club/api/addcomment",
+                url: commonApiUrl+"club/api/addcomment",
                 data: { "jsondata": JSON.stringify(jsondata) },
                 success: function (result) {
                     if (result.dataType == "ok") {
@@ -2124,7 +2127,7 @@
     };
     $.fn.UserOnline = function (fun) {
         $.ajax({
-            type: "GET", dataType: "jsonp", url: "http://192.168.0.100:9014/apis/api/logincheck",
+            type: "GET", dataType: "jsonp", url: commonApiUrl+"api/logincheck",
             success: function (responseJson) {
                 if(jsmodel === 'dev'){
                     fun(responseJson);
@@ -2145,11 +2148,11 @@
         $this.on("click", "#qqLogin", function (event) {
             event.preventDefault();
             var returnUrl = window.location.href;
-            window.location.href = "http://192.168.0.100:9014/apis/oauth/authorizelogin?authorizetype=qq&returnUrl=" + encodeURI(returnUrl);
+            window.location.href = commonApiUrl+"oauth/authorizelogin?authorizetype=qq&returnUrl=" + encodeURI(returnUrl);
         }).on("click", "#sinaLogin", function (event) {
             event.preventDefault();
             var returnUrl = window.location.href;
-            window.location.href = "http://192.168.0.100:9014/apis/oauth/authorizelogin?authorizetype=sina&returnUrl=" + encodeURI(returnUrl);
+            window.location.href = commonApiUrl+"oauth/authorizelogin?authorizetype=sina&returnUrl=" + encodeURI(returnUrl);
         })
     };
     $.fn.insertYmwLoginPop = function () {

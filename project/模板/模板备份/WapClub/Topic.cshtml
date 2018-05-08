@@ -1,0 +1,106 @@
+﻿@using HS.GamerSky.Web.Model.Club
+@using HS.GamerSky.Web.BusinessLogic.Club
+@using HS.GamerSky.Web.BusinessLogic.Users
+@using HS.GamerSky.Web.Model.Users
+@using HS.GamerSky.Framework.Common
+@using HS.GamerSky.Web
+@using Autofac
+@using HS.GamerSky.Web.Search
+@using HS.GamerSky.Foundation
+
+@inherits WebViewPage<TopicInfo>
+@{
+	ViewBag.Title = Model.Title + " _ 游民星空 GamerSky.com";
+	Layout = "~/Views/Shared/_LayoutWapClub.cshtml";
+	int clubId = Request.QueryString["club"].ToInt32();
+	ActiveUserManage activeUserManage = SearchEngineStarter.Container.Resolve<ActiveUserManage>();
+	List<ActiveUserInfo> activeList = activeUserManage.GetTopicInfoByUpdateTime(Model.Id);
+	TopicManage topicManage = SearchEngineStarter.Container.Resolve<TopicManage>();
+	ClubManage clubManage = SearchEngineStarter.Container.Resolve<ClubManage>();
+	List<TopicInfo> topicList = topicManage.GetSearchTopicInfo(0);
+	List<ClubInfo> clubList = clubManage.GetHostClubList();
+	var wapTopImage = Model.WapTopImage;
+	var wapIcon = Model.WapIcon != "" ? Model.WapIcon : "http://image.gamersky.com/webimg15/user/club/wap/exp/icon-qz-topic.png";
+	//是否有加精
+	SearchContent searchContent = SearchContent.GetSearchContenter();
+	bool isElite = searchContent.GetContentType(0, Model.Id, 1);
+	bool IsPicture = searchContent.GetContentType(0, Model.Id, 2);
+	bool isVideo = searchContent.GetContentType(0, Model.Id, 3);
+	bool isManage = false;
+	string userId = "";
+	if (PEContext.Current.User.Identity.IsAuthenticated)
+	{
+		userId = PEContext.Current.User.UserId.ToString();
+		if (Model.UserId.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Contains(userId))
+		{
+			isManage = true;
+		}
+	}
+}
+<hidden class="clubId" data-clubId="0" data-selectClubId="@clubId"></hidden>
+<hidden class="topic" data-topic="@Model.Title" data-topicId="@Model.Id"></hidden>
+<div class="qzMain" id="qzMain">
+	<!--话题页 上部 begin-->
+	<section class="qz-top qz-top-topic">
+		<img src="@wapTopImage" alt="" class="bg">
+		<a class="icon"><img src="@wapIcon" alt=""></a>
+		<div class="intro themeNum" data-topic="@Model.Title">
+			<h5>@Model.Title</h5>
+			<p>@Model.Intro</p>
+			<p><span class="join">0人</span>参与&nbsp;&nbsp;&nbsp;&nbsp;<span class="theme">0</span>条主题 </p>
+		</div>
+		<div class="line"></div>
+		<div class="btnarea">
+			<a class="btn qzBtnContext">参与讨论</a>
+		</div>
+	</section>
+	<!--话题页 上部 end-->
+	<!--话题页上部列表 begin-->
+	<div style="display:none">
+		<div class="qz-rem" style="display:none">
+			<aside class="qz-rem-top">来自<a class="comeFrom"></a></aside>
+			<div class="qz-card-list" id="qzCardListTopic" data-pageIndex="0" data-pageSize="10"></div>
+			<a class="qz-card-more qzCardMoreBtn">查看更多</a>
+		</div>
+	</div>
+	<!--话题页上部列表 end-->
+	<section class="qz-box">
+		<!--圈子页导航-->
+		<div class="qzNavPos"></div>
+		<aside class="qz-nav qzNavFxW">
+			<nav class="clearfix qzNavFx">
+				<a class="cur" data-type="0">全部</a>
+				@if (isElite)
+				{
+					<a data-type="1">精品</a>
+				}
+				@if (IsPicture)
+				{
+					<a data-type="2">图片</a>
+				}
+				@if (isVideo)
+				{
+					<a data-type="3">视频</a>
+				}
+			</nav>
+			<select class="qz-nav-sort" data-sort="1">
+				<option data-sort="1" value="">默认排序</option>
+				<option data-sort="0" value="">回复时间</option>
+				<option data-sort="2" value="">热门排序</option>
+			</select>
+			<select class="clubList" style="display:none">
+				<option value="">发往圈子</option>
+				@foreach (var item in clubList)
+				{
+					if (isManage == false && item.BanToPost == true)
+					{
+						continue;
+					}
+					<option value="@item.Id">@item.Title</option>
+				}
+			</select>
+		</aside>
+		<!--圈子页导航 end-->
+		<div class="qz-card-list" id="qzCardList" data-pageIndex="0" data-pageSize="10" data-loading="false" data-infiload="close"></div>
+	</section>
+</div>

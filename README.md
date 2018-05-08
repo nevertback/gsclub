@@ -33,3 +33,12 @@ project/js
 project/sass  
 * 使用目录  
 project/css  
+
+#### 更新
+js目录：  
+http://j.gamersky.com/user/club/wap/js/qz.wap.js  
+http://j.gamersky.com/user/club/wap/js/qz.wapwebcall.v1.0.1.js  
+http://j.gamersky.com/web2015/qzcomment/js/qzcmtconfig.wap.js
+
+css目录：  
+http://j.gamersky.com/user/club/wap/css/qz.wap.css

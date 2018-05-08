@@ -819,7 +819,7 @@
                             }
                             else {
                                 if (item.size / 1024 <= settingSize) {
-                                    var html = '<div class="qz-pic-list-li temp"><img src="http://image.gamersky.com/webimg15/user/club/pc/loading.gif" ></div>';
+                                    var html = '<div class="qz-pic-list-li temp"><img src="//image.gamersky.com/webimg15/user/club/pc/loading.gif" ></div>';
                                     $(".qz-pic-list-li:first").before(html);
                                 }
                             }

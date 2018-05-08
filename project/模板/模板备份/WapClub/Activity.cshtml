@@ -1,0 +1,53 @@
+﻿@using HS.GamerSky.Web.Model.Club
+@using HS.GamerSky.Web.Search
+@using HS.GamerSky.Framework.Common
+@using HS.GamerSky.Web.Model.Users
+@using HS.GamerSky.Web
+@using HS.GamerSky.Web.BusinessLogic.Club
+@using Autofac
+
+@inherits WebViewPage<SearchInfo>
+@{
+    string title = "游民星空 GamerSky.com";
+    if (!string.IsNullOrWhiteSpace(Model.Content))
+    {
+        string removeTagContent = Model.Content.RemoveTags();
+        if (!string.IsNullOrWhiteSpace(removeTagContent))
+        {
+            title = removeTagContent.SubString(40, "");
+            title += "_游民星空 GamerSky.com";
+        }
+    }
+    ViewBag.Title = title;
+    Layout = "~/Views/Shared/_LayoutWapClub.cshtml";
+    int clubId = Request.QueryString["club"].ToInt32();
+    int topicId = Request.QueryString["topic"].ToInt32();
+    string query = Request.QueryString.ToString();
+    
+    string content = SearchHelper.ReplaceTemplate(Model, 0, clubId, topicId);
+    TopicManage topicManage = SearchEngineStarter.Container.Resolve<TopicManage>();
+    ClubManage clubManage = SearchEngineStarter.Container.Resolve<ClubManage>();
+    ClubInfo clubInfo = clubManage.GetClubInfoById(clubId);
+    List<TopicInfo> topicList = topicManage.GetSearchTopicInfo(clubId);
+
+    var requestUrl = Request.Url.Segments;
+    var commentId = 0;
+    if(requestUrl.Length>=4)
+    {
+        commentId = requestUrl[3].ToInt32();
+    }
+}
+<div class="qzMain" id="qzMain">
+    <section class="qz-page" id="qzCardContext" data-cid="@commentId" >      
+    </section>
+    <section class="qz-comment-like">
+        <nav class="tabNavCl">
+            <a class="cur commentNum" data-tar="qzClComment">评论<i>0</i></a>
+            <a data-tar="qzClLike">赞<i>@Model.Digg</i></a>
+        </nav>
+        <!--列表为无限加载-->
+        <ul class="qz-cl-comment qzClCon qzClComment cur" id="qzClComment" data-cid="@commentId" data-page="0"></ul>
+        <ul class="qz-cl-like qzClCon qzClLike" id="qzClLike" data-cid="@commentId" ></ul>
+    </section>
+</div>
+
