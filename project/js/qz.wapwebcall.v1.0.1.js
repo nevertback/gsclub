@@ -67,7 +67,7 @@
     var qzFunc = {
         //设置屏幕缩放
         setRem: function () {
-            var pw = $(window).width(),$clubDad = $('#QZCMT'),scaleSize = $clubDad.attr('data-scale');
+            var pw = $(window).width(),$clubDad = $('#QZCMT'),scaleSize = $clubDad.attr('data-scale'),$qzMain = $('#qzMain');
             if (pw >= 640) {
                 pw = 640;
             }

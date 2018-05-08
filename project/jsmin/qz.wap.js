@@ -1,5 +1,5 @@
 (function ($) {
-    var jsmodel = 'dev',commonApiUrl = '//i.gamersky.com/';
+    var jsmodel = 'pro',commonApiUrl = '//i.gamersky.com/';
     if(jsmodel === 'dev'){
         commonApiUrl = '//192.168.0.100:9014/apis/';
     }
@@ -827,7 +827,7 @@
                         var CommLine = {
                             template:'\
                                 <div class="info-comment">\
-                                    <div v-for="item in therld" class="ic-item qzBtnCommentInner" :data-clubcontentid="cid" :data-commid="item.commid" :data-name="item.name" :data-userid="item.useId">\
+                                    <div v-for="item in therld" class="ic-item qzBtnCommentInner" :data-clubcontentid="theCid" :data-commid="item.commId" :data-name="item.name" :data-userid="item.userId">\
                                         <a class="ici-name">{{item.name}}</a>\
                                         <i v-if="item.reply" class="ici-rpy">回复</i>\
                                         <a v-if="item.reply" class="ici-name">{{item.reply}}</a>\
@@ -843,7 +843,8 @@
                                     moregray:false,
                                     page:1,
                                     pagesize:10,
-                                    therld:this.rld
+                                    therld:this.rld,
+                                    theCid:this.cid
                                 }
                             },
                             props:['rld','cid','count','commid'],
@@ -907,7 +908,7 @@
                                     <div class="info">\
                                         <h5>{{item.name}}<a class="info-like qzCardLike" @click="qzCardLike(item.commId)">{{item.replyLike}}</a></h5>\
                                         <div class="info-others"><span class="info-time">{{item.replyTime}}</span></div>\
-                                        <div class="context qzBtnCommentInner" :data-clubcontentid="item.clubContentId" :data-commid="item.commid" :data-name="item.name" :data-userid="item.useId" v-html="item.context"></div>\
+                                        <div class="context qzBtnCommentInner" :data-clubcontentid="item.clubContentId" :data-commid="item.commId" :data-name="item.name" :data-userid="item.userId" v-html="item.context"></div>\
                                         <comm-line v-if="item.replyCount>0" :count="item.replyCount" :cid="item.clubContentId" :rld="item.reply" :commid="item.commId"></comm-line>\
                                      </div>\
                                 </li>\
@@ -976,8 +977,10 @@
                                 clubApis.getWapClubCommentwr(reqDataFmt,function (res) {
                                     if (res.errorCode === 0) {
                                         var result = res.result;
-                                        that.hotshow = true;
-                                        that.lists = result.commlist;
+                                        if(result.commlist.length>0){
+                                            that.hotshow = true;
+                                            that.lists = result.commlist;
+                                        }
                                     }else{
                                         console.log(res.errorMessage)
                                     }
@@ -2110,6 +2113,7 @@
                         }
                         else {
                             $(".qzBtnComment[data-clubcontentid=" + clubContentId + "]").html("1").attr("data-commcount", 1);
+                            qzFunc.initPageContext();
                         }
                         $(".qzPop").removeClass('cur');
                         $('html,body').removeClass('hideScroll').animate({ scrollTop: beforeOpenSt }, 0);

@@ -1,5 +1,5 @@
 (function ($) {
-    var OperationMode = 'dev'; // dev | online;
+    var OperationMode = 'pro'; // dev | online;
     var qzScript = '//j.gamersky.com/user/club/wap/js/qz.wapwebcall.v1.0.1.js',
         qzLinkUrl = '//j.gamersky.com/user/club/wap/css/qz.wap.css',
         qzPSW = '//j.gamersky.com/css/g/lib/??photoswipe.min.css,default-skin.min.css',

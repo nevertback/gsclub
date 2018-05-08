@@ -292,3 +292,6 @@ a{text-decoration:none}
 .club-card-comment-list-all nav{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;position:relative;padding-left:.2rem;width:6.2rem;height:.8rem;border-bottom:1px solid #eee}
 .club-card-comment-list-all nav a{display:block;margin-right:.3rem;width:1.1rem;height:.76rem;line-height:.76rem;border-bottom:.04rem solid #fff;font-size:.24rem;color:#222;text-align:center}
 .club-card-comment-list-all nav a.cur{color:#0099e5;border-bottom-color:#0099e5}
+.gsRem720 .club-pop-baidu-main{margin-left:-3.6rem;width:7.2rem;z-index:999999}
+.gsRem720 .club-pop-baidu-mask{margin-left:-3.6rem;width:7.2rem;z-index:999999}
+.gsRem720 .club-pop-baidu-main .club-pop-baidu-body .club-pop-baidu-btns{padding-left:1.25rem}
