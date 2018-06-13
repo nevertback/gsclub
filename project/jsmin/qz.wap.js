@@ -1,5 +1,5 @@
 (function ($) {
-    var jsmodel = 'dev',//pro|dev
+    var jsmodel = 'pro',//pro|dev
         commonApiUrl = '//i.gamersky.com/';
     if(jsmodel === 'dev'){
         commonApiUrl = '//192.168.0.100:9014/apis/';

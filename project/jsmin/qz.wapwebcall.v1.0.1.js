@@ -338,9 +338,6 @@
                 insDom += qzFunc.createCard(item);
             });
             $(tar).html(insDom);
-            $(".qzBtnLike").like();
-            $(".qzBtnLike").addLike();
-            $(".qzBtnComment").commentCount();
             $(".qzCard .content").removeTarget();
             qzFunc.photoSwp();
             qzFunc.openVideoPop();
@@ -352,9 +349,6 @@
                 insDom += qzFunc.createCard(item);
             });
             $(tar).append(insDom);
-            $(".qzBtnLike").like();
-            $(".qzBtnLike").addLike();
-            $(".qzBtnComment").commentCount();
             $(".qzCard .content").removeTarget();
             qzFunc.photoSwp();
             qzFunc.openVideoPop();
