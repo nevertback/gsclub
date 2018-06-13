@@ -606,7 +606,7 @@
                 var popDom = '';
                 popDom += '<div class="qz-video-pop qzVideoPop">';
                 popDom += '<div class="qz-video-pop-con">';
-                popDom += '<iframe height="100%" width="100%" src="http://player.youku.com/embed/' + vdsrc + '" frameborder=0 allowfullscreen></iframe>';
+                popDom += '<iframe height="100%" width="100%" src="//player.youku.com/embed/' + vdsrc + '" frameborder=0 allowfullscreen></iframe>';
                 popDom += '</div>';
                 popDom += '<div class="qz-video-bar"><a class="qz-video-pop-close qzVideoPopClose"></div></a>';
                 popDom += '</div>';
@@ -628,7 +628,7 @@
             }
             $('.qzVideoPopBtn').on('click', function () {
                 var $this = $(this), vdurl = $this.data('href'), vdsrc = '';
-                var ykSign = 'http://v.youku.com/v_show/id_', ykIndexOfBegin = vdurl.indexOf(ykSign) + ykSign.length, ykIndexOfEnd = vdurl.indexOf('==.html');
+                var ykSign = '//v.youku.com/v_show/id_', ykIndexOfBegin = vdurl.indexOf(ykSign) + ykSign.length, ykIndexOfEnd = vdurl.indexOf('==.html');
                 vdsrc = vdurl.substring(ykIndexOfBegin, ykIndexOfEnd);
                 videoPop(vdsrc);
             })
@@ -650,9 +650,8 @@
                 popDom += '</div>';
                 return popDom;
             }
-
             function initBaiduShare() {
-                var baiduSrc = 'http://bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5);
+                var baiduSrc = '//j.gamersky.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5);
                 window._bd_share_config = {
                     common : {
                         bdText : text,
@@ -947,7 +946,9 @@
             if (support != "") {
                 support = support + ","
             }
-            support = support + $(this).attr("data-clubcontentid");
+            if($(this).attr('data-isloaded') !== 'loaded'){
+                support = support + $(this).attr("data-clubcontentid");
+            }
         });
         var jsondata = {
             clubContentId: support
@@ -960,7 +961,7 @@
                     var body = $.parseJSON(data.body);
                     $.each(body, function (index, value) {
                         $(".qzBtnLike[data-clubcontentid='" + value.Id + "']").each(function () {
-                            $(this).find("b").html(value.digg);
+                            $(this).attr("data-isloaded",'loaded').find("b").html(value.digg);
                             $(this).attr("data-likecount", value.digg);
                         });
                     });
@@ -1007,7 +1008,9 @@
             if (support != "") {
                 support = support + ","
             }
-            support = support + $(this).attr("data-clubcontentid");
+            if($(this).attr('data-isloaded') !== 'loaded'){
+                support = support + $(this).attr("data-clubcontentid");
+            }
         });
         var jsondata = {
             clubContentId: support
@@ -1020,7 +1023,7 @@
                     var body = $.parseJSON(data.body);
                     $.each(body, function (index, value) {
                         $(".qzBtnComment[data-clubcontentid='" + value.Id + "']").each(function () {
-                            $(this).html(value.commentCount);
+                            $(this).attr('data-isloaded','loaded').html(value.commentCount);
                             $(this).attr("data-commcount", value.commentCount);
                         });
                     });

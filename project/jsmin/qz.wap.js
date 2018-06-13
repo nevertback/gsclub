@@ -1,5 +1,6 @@
 (function ($) {
-    var jsmodel = 'pro',commonApiUrl = '//i.gamersky.com/';
+    var jsmodel = 'dev',//pro|dev
+        commonApiUrl = '//i.gamersky.com/';
     if(jsmodel === 'dev'){
         commonApiUrl = '//192.168.0.100:9014/apis/';
     }
@@ -1407,7 +1408,7 @@
                 var popDom = '';
                 popDom += '<div class="qz-video-pop qzVideoPop">';
                 popDom += '<div class="qz-video-pop-con">';
-                popDom += '<iframe height="100%" width="100%" src="http://player.youku.com/embed/' + vdsrc + '" frameborder=0 allowfullscreen></iframe>';
+                popDom += '<iframe height="100%" width="100%" src="//player.youku.com/embed/' + vdsrc + '" frameborder=0 allowfullscreen></iframe>';
                 popDom += '</div>';
                 popDom += '<div class="qz-video-bar"><a class="qz-video-pop-close qzVideoPopClose"></div></a>';
                 popDom += '</div>';
@@ -1429,7 +1430,7 @@
             }
             $('.qzVideoPopBtn').on('click', function () {
                 var $this = $(this), vdurl = $this.data('href'), vdsrc = '';
-                var ykSign = 'http://v.youku.com/v_show/id_', ykIndexOfBegin = vdurl.indexOf(ykSign) + ykSign.length, ykIndexOfEnd = vdurl.indexOf('==.html');
+                var ykSign = '//v.youku.com/v_show/id_', ykIndexOfBegin = vdurl.indexOf(ykSign) + ykSign.length, ykIndexOfEnd = vdurl.indexOf('==.html');
                 vdsrc = vdurl.substring(ykIndexOfBegin, ykIndexOfEnd);
                 videoPop(vdsrc);
             })
@@ -1437,7 +1438,7 @@
         //构建全部话题列表
         createAllTopic: function (dt) {
             var topicDom = '';
-            topicDom += '<li data-topicid="' + dt.Id + '" data-topic="' + dt.Title + '"><a href=commonApiUrl+"m/topic/' + dt.Id + '"><b>' + dt.Title + '</b><span><i class="num-in">0</i>人参与<i class="num-comm">0</i>条主题</span></a></li>';
+            topicDom += '<li data-topicid="' + dt.Id + '" data-topic="' + dt.Title + '"><a href="'+commonApiUrl+'m/topic/' + dt.Id + '"><b>' + dt.Title + '</b><span><i class="num-in">0</i>人参与<i class="num-comm">0</i>条主题</span></a></li>';
             return topicDom;
         },
         //插入全部话题列表
@@ -1535,9 +1536,8 @@
                 popDom += '</div>';
                 return popDom;
             }
-            
             function initBaiduShare() {
-                var baiduSrc = 'http://bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5);
+                var baiduSrc = '//j.gamersky.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5);
                 window._bd_share_config = {
                     common : {
                         bdText : text,
@@ -1898,7 +1898,9 @@
             if (support != "") {
                 support = support + ","
             }
-            support = support + $(this).attr("data-clubcontentid");
+            if($(this).attr('data-isloaded') !== 'loaded'){
+                support = support + $(this).attr("data-clubcontentid");
+            }
         });
         var jsondata = {
             clubContentId: support
@@ -1909,7 +1911,7 @@
                 var body = $.parseJSON(data.body);
                 $.each(body, function (index, value) {
                     $(".qzBtnLike[data-clubcontentid='" + value.Id + "']").each(function () {
-                        $(this).find("b")
+                        $(this).attr("data-isloaded",'loaded').find("b")
                             .html(value.digg)
                             .attr("data-likecount", value.digg);
                     });
@@ -1954,7 +1956,9 @@
                 if (support != "") {
                     support = support + ","
                 }
-                support = support + $(this).attr("data-clubcontentid");
+                if($(this).attr('data-isloaded') !== 'loaded'){
+                    support = support + $(this).attr("data-clubcontentid");
+                }
             });
             var jsondata = {
                 clubContentId: support
@@ -1969,7 +1973,7 @@
                             if ($(that).parents(".qzClComment").length > 0) {
                                 return;
                             }
-                            $th.html(value.commentCount);
+                            $th.html(value.commentCount).attr('data-isloaded','loaded');
                             $th.attr("data-commcount", value.commentCount);
                             if($('#qzCardList').length>0&&value.commentCount>0){
                                 $th.insertListComment();
